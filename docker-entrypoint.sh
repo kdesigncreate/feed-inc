@@ -26,6 +26,10 @@ log "Setting permissions..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
+# Clear bootstrap cache to avoid dev dependency issues
+log "Clearing bootstrap cache..."
+rm -rf /var/www/html/bootstrap/cache/*
+
 # Generate APP_KEY if not set
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:dGVzdF9rZXlfZm9yX2RlbW9fcHVycG9zZXNfb25seQ==" ]; then
     log "Generating application key..."

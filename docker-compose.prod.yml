@@ -4,9 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: feed-laravel
-    ports:
-      - "9000:9000"
+    container_name: feed-laravel-prod
     volumes:
       - sqlite_data:/var/www/html/database
       - storage_data:/var/www/html/storage
@@ -16,7 +14,7 @@ services:
       - APP_DEBUG=false
       - DB_CONNECTION=sqlite
       - DB_DATABASE=/var/www/html/database/database.sqlite
-      - APP_KEY=${APP_KEY:-base64:VhQa+IQ13kR/0dV3u+XmPkvRMuuGyTTSUZh0Hy01SWg=}
+      - APP_KEY=base64:VhQa+IQ13kR/0dV3u+XmPkvRMuuGyTTSUZh0Hy01SWg=
       - APP_URL=https://designcreateform.com
       - SANCTUM_STATEFUL_DOMAINS=designcreateform.com,www.designcreateform.com
       - SESSION_DOMAIN=.designcreateform.com
@@ -34,7 +32,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: feed-nextjs
+    container_name: feed-nextjs-prod
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=https://designcreateform.com/api
@@ -54,12 +52,12 @@ services:
   # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
-    container_name: feed-nginx
+    container_name: feed-nginx-prod
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
       - nginx_logs:/var/log/nginx
     depends_on:

@@ -1,0 +1,15 @@
+services:
+  laravel:
+    image: php:8.2-fpm-alpine
+    container_name: feed-laravel-simple
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/var/www/html:rw
+    working_dir: /var/www/html
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+    command: php -S 0.0.0.0:8080 -t public
+    restart: unless-stopped
+EOF < /dev/null

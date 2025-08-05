@@ -15,7 +15,7 @@ This is a full-stack Japanese corporate website for Feed Inc. (株式会社フ�
 - **Key Features**: Basic Laravel setup with minimal custom code
 
 ### Frontend (Next.js)
-- **Framework**: Next.js 15.3.5 with App Router
+- **Framework**: Next.js 14.2.0 with App Router
 - **Location**: `/frontend/`
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4.0
@@ -30,7 +30,15 @@ cd backend
 # Install dependencies
 composer install
 
-# Development server (runs Laravel + queue + logs + vite concurrently)
+# Environment setup (if needed)
+cp .env.example .env
+php artisan key:generate
+
+# Database setup
+touch database/database.sqlite
+php artisan migrate:fresh --seed
+
+# Development server (runs Laravel + queue + vite concurrently)
 composer run dev
 
 # Run tests
@@ -116,8 +124,12 @@ npm run lint
 
 ### Testing
 - Frontend: Use `npm run lint` for code quality
-- Backend: Use `composer run test` for Laravel tests
+- Backend: Use `composer run test` for Laravel tests (clears config and runs PHPUnit)
 - Both: Check build processes before deployment
+
+### Single Test Execution
+- Backend: `php artisan test --filter TestClassName` for specific test classes
+- Backend: `php artisan test tests/Feature/ArticleTest.php` for specific test files
 
 ## Authentication & Admin System
 
@@ -135,3 +147,62 @@ npm run lint
 - **API Endpoints**: 
   - Public: `GET /api/articles`, `GET /api/articles/{slug}`, `GET /api/categories`
   - Admin: `POST /api/articles`, `PUT /api/articles/{id}`, `DELETE /api/articles/{id}`
+
+## Docker Development
+
+### Production Environment
+```bash
+# Start all services (Laravel, Next.js, Nginx)
+docker-compose up -d
+
+# Check container status
+docker-compose ps
+
+# View logs
+docker-compose logs [service-name]
+
+# Stop all services
+docker-compose down
+```
+
+### Development Environment
+```bash
+# Use development compose file
+docker-compose -f docker-compose.dev.yml up -d
+
+# Database migrations in container
+docker exec feed-laravel php artisan migrate:fresh --seed
+```
+
+## API Integration
+
+### Frontend API Configuration
+- API base URL configured in `src/lib/constants.ts`
+- Axios client with request/response interceptors
+- Automatic token management for authenticated requests
+- Error handling with automatic logout on 401 responses
+
+### Backend API Structure
+- Public endpoints for articles and categories
+- Protected admin endpoints requiring Sanctum authentication
+- SQLite database with seeded sample data
+- CORS configuration for frontend integration
+
+## Important File Locations
+
+### Configuration Files
+- `/docker-compose.yml` - Production container orchestration
+- `/nginx.conf` - Web server configuration with SSL
+- `/backend/routes/api.php` - API route definitions
+- `/frontend/src/lib/constants.ts` - Business constants and API config
+
+### Key Components
+- `/frontend/src/contexts/AuthContext.tsx` - Authentication state management
+- `/frontend/src/lib/api.ts` - API client configuration
+- `/backend/app/Http/Controllers/ArticleController.php` - Article API logic
+- `/backend/app/Http/Controllers/AuthController.php` - Authentication logic
+
+### Database
+- `/backend/database/migrations/` - Database schema definitions
+- `/backend/database/seeders/` - Sample data for development
+- `/backend/database/database.sqlite` - SQLite database file

@@ -33,8 +33,9 @@ RUN composer install --no-scripts --no-autoloader --no-dev
 # Copy Laravel application
 COPY backend/ .
 
-# Complete composer install
-RUN composer dump-autoload --optimize --no-dev
+# Complete composer install with clean package discovery
+RUN rm -rf bootstrap/cache/* \
+    && composer dump-autoload --optimize --no-dev --no-scripts
 
 # Create directories and set permissions
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \

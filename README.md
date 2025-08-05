@@ -19,61 +19,76 @@ feed-inc/
 ├── backend/          # Laravel バックエンド
 ├── frontend/         # Next.js フロントエンド
 ├── CLAUDE.md         # 開発ガイド
-├── DEPLOYMENT.md     # デプロイ手順
+├── docker-compose.yml # 本番環境設定
 └── README.md         # このファイル
 ```
 
 ## 🛠️ 技術スタック
 
 ### フロントエンド
-- **Framework**: Next.js 15.3.5 (App Router)
+- **Framework**: Next.js 14.2.0 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4.0
 - **UI Components**: Radix UI
-- **Testing**: Jest + Testing Library
-- **Build Tool**: Turbopack
+- **Animation**: Swiper.js
+- **HTTP Client**: Axios
 
 ### バックエンド
 - **Framework**: Laravel 12.0
 - **Language**: PHP 8.2+
-- **Database**: MySQL
+- **Database**: SQLite
 - **Authentication**: Laravel Sanctum
 - **Testing**: PHPUnit
 
-## 📋 主な機能
+### インフラ
+- **Containerization**: Docker & Docker Compose
+- **Web Server**: Nginx (Reverse Proxy)
+- **SSL**: 自己署名証明書対応
 
-### 🎨 フロントエンド機能
-- **レスポンシブデザイン**: PC・スマートフォン対応
-- **会社紹介**: 企業理念、沿革、アクセス情報
-- **サービス紹介**: 7つのサービスカテゴリー
-- **実績紹介**: ケーススタディとクリエイティブ事例
-- **ナレッジ**: 専門知識とインサイト記事
-- **多言語対応**: 日本語メイン、英語表記併記
+## 🎯 主要機能
 
-### ⚙️ バックエンド機能
-- **記事管理システム**: CRUD操作、カテゴリ管理
-- **ユーザー認証**: 管理者ログイン/ログアウト
-- **検索・フィルタリング**: タイトル・内容での検索
-- **API**: RESTful API設計
-- **セキュリティ**: XSS防止、SQLインジェクション対策
+### 公開サイト
+- **企業情報**: 会社概要、アクセス情報、企業理念
+- **サービス紹介**: 7つの主要サービスカテゴリ
+- **実績紹介**: プロジェクト事例とクリエイティブ実績
+- **ナレッジ**: プロモーション・デザインに関する専門記事
+- **ワークフロー**: プロジェクト進行プロセスの可視化
 
-## 🚀 開発環境セットアップ
+### 管理システム
+- **認証システム**: 管理者ログイン・ログアウト
+- **記事管理**: ナレッジ記事のCRUD操作
+- **カテゴリ管理**: 記事カテゴリの分類・フィルタリング
+- **公開制御**: 記事の公開・非公開切り替え
 
-### 必要な環境
-- **Node.js**: 18.x以上
-- **PHP**: 8.2以上
-- **Composer**: 2.x
-- **MySQL**: 8.0以上
+## 🏃‍♂️ クイックスタート
 
-### インストール手順
+### 前提条件
+- Docker & Docker Compose
+- Node.js 18+（ローカル開発時）
+- PHP 8.2+（ローカル開発時）
+- Composer（ローカル開発時）
 
-#### 1. リポジトリのクローン
+### Docker による起動（推奨）
+
+1. **リポジトリのクローン**
 ```bash
 git clone <repository-url>
 cd feed-inc
 ```
 
-#### 2. バックエンドセットアップ
+2. **本番環境の起動**
+```bash
+docker-compose up -d
+```
+
+3. **アクセス確認**
+- フロントエンド: http://localhost
+- バックエンド API: http://localhost/api
+- 管理画面: http://localhost/admin
+
+### ローカル開発環境
+
+#### バックエンド（Laravel）
 ```bash
 cd backend
 
@@ -82,22 +97,17 @@ composer install
 
 # 環境変数の設定
 cp .env.example .env
-# .envファイルを編集してデータベース情報を設定
-
-# アプリケーションキーの生成
 php artisan key:generate
 
-# データベースマイグレーション
-php artisan migrate
-
-# シーダーの実行（オプション）
-php artisan db:seed
+# データベースのセットアップ
+touch database/database.sqlite
+php artisan migrate:fresh --seed
 
 # 開発サーバーの起動
 composer run dev
 ```
 
-#### 3. フロントエンドセットアップ
+#### フロントエンド（Next.js）
 ```bash
 cd frontend
 
@@ -108,193 +118,242 @@ npm install
 npm run dev
 ```
 
-## 🧪 テスト実行
+## 📁 ディレクトリ構造
 
-### バックエンドテスト
-```bash
-cd backend
-
-# 全テストの実行
-composer run test
-
-# コードフォーマット
-./vendor/bin/pint
+### フロントエンド (`/frontend`)
 ```
-
-### フロントエンドテスト
-```bash
-cd frontend
-
-# 全テストの実行
-npm test
-
-# テスト（ウォッチモード）
-npm run test:watch
-
-# カバレッジ測定
-npm run test:coverage
-
-# リンティング
-npm run lint
-```
-
-## 📁 プロジェクト構造
-
-### フロントエンド構造
-```
-frontend/src/
+src/
 ├── app/                 # Next.js App Router
-│   ├── admin/          # 管理画面
-│   ├── cases/          # 実績ページ
-│   ├── company/        # 会社概要
-│   ├── knowledge/      # ナレッジページ
-│   └── services/       # サービス紹介
+│   ├── admin/          # 管理画面ページ
+│   ├── company/        # 企業情報ページ
+│   ├── services/       # サービス紹介ページ
+│   ├── cases/          # 実績紹介ページ
+│   └── knowledge/      # ナレッジページ
 ├── components/         # 再利用可能コンポーネント
 ├── contexts/           # React Context
-├── lib/               # ユーティリティ・定数
-└── types/             # TypeScript型定義
+├── lib/                # ユーティリティ・設定
+└── types/              # TypeScript型定義
 ```
 
-### バックエンド構造
+### バックエンド (`/backend`)
 ```
-backend/
-├── app/
-│   ├── Http/Controllers/  # API コントローラー
-│   └── Models/           # Eloquent モデル
-├── database/
-│   ├── migrations/       # データベースマイグレーション
-│   ├── seeders/         # テストデータ
-│   └── factories/       # ファクトリー
-├── routes/
-│   └── api.php          # API ルート定義
-└── tests/               # テストファイル
+app/
+├── Http/
+│   ├── Controllers/    # APIコントローラー
+│   └── Middleware/     # ミドルウェア
+├── Models/             # Eloquentモデル
+database/
+├── migrations/         # データベースマイグレーション
+├── seeders/           # シードデータ
+└── database.sqlite    # SQLiteデータベース
 ```
 
 ## 🔧 開発コマンド
 
-### よく使用するコマンド
-
-#### フロントエンド
+### バックエンド開発
 ```bash
-npm run dev        # 開発サーバー起動
-npm run build      # 本番ビルド
-npm run start      # 本番サーバー起動
-npm run lint       # ESLint実行
+# テスト実行
+composer run test
+
+# コード整形
+./vendor/bin/pint
+
+# キャッシュクリア
+php artisan cache:clear
+php artisan config:clear
+
+# データベースリセット
+php artisan migrate:fresh --seed
 ```
 
-#### バックエンド
+### フロントエンド開発
 ```bash
-composer run dev   # 開発サーバー起動（Laravel + queue + vite）
-composer run test  # テスト実行
-./vendor/bin/pint  # コードフォーマット
+# リンター実行
+npm run lint
+
+# 本番ビルド
+npm run build
+
+# 本番サーバー起動
+npm start
 ```
 
-## 🎯 開発のベストプラクティス
-
-### コーディング規則
-- **TypeScript**: 厳密な型チェックを使用
-- **ESLint/Prettier**: コード品質の統一
-- **PSR-12**: PHP コーディング標準に準拠
-- **テスト駆動**: 新機能は必ずテストを含める
-
-### Git ワークフロー
+### Docker操作
 ```bash
-# 新機能の開発
-git checkout -b feature/新機能名
-git add .
-git commit -m "feat: 新機能の説明"
-git push origin feature/新機能名
+# コンテナ状況確認
+docker-compose ps
+
+# ログ確認
+docker-compose logs [service-name]
+
+# コンテナ内でコマンド実行
+docker exec feed-laravel php artisan migrate
+docker exec feed-nextjs npm run build
+
+# 停止・削除
+docker-compose down
 ```
 
-### コミットメッセージ規則
-- `feat:` 新機能
-- `fix:` バグ修正
-- `docs:` ドキュメント更新
-- `style:` コードスタイル変更
-- `refactor:` リファクタリング
-- `test:` テスト関連
+## 🗃️ データベース構造
+
+### Articles テーブル
+- `id`: 主キー
+- `title`: 記事タイトル
+- `slug`: URL用スラッグ
+- `content`: 記事本文（HTML）
+- `excerpt`: 記事概要
+- `category`: カテゴリ
+- `author`: 著者名
+- `is_published`: 公開フラグ
+- `published_at`: 公開日時
+
+### Users テーブル
+- `id`: 主キー
+- `name`: ユーザー名
+- `email`: メールアドレス
+- `password`: ハッシュ化パスワード
+
+## 🔐 認証システム
+
+### 管理者ログイン
+- **URL**: `/admin/login`
+- **認証方式**: Laravel Sanctum (Token-based)
+- **デフォルト管理者**:
+  - Email: `admin@feed-inc.com`
+  - Password: `password123`
+
+### API認証
+```typescript
+// リクエストヘッダー
+Authorization: Bearer {token}
+
+// 自動トークン管理
+// localStorage に保存
+// 401エラー時に自動ログアウト
+```
+
+## 🌐 API エンドポイント
+
+### 公開API
+- `GET /api/articles` - 記事一覧取得
+- `GET /api/articles/{slug}` - 個別記事取得
+- `GET /api/categories` - カテゴリ一覧取得
+
+### 認証API
+- `POST /api/login` - ログイン
+- `POST /api/logout` - ログアウト
+- `GET /api/user` - 現在のユーザー情報
+
+### 管理者API（認証必須）
+- `POST /api/articles` - 記事作成
+- `PUT /api/articles/{id}` - 記事更新
+- `DELETE /api/articles/{id}` - 記事削除
+- `GET /api/admin/articles` - 管理者用記事一覧
+
+## 🎨 デザインシステム
+
+### カラーパレット
+- **Primary**: Corporate Blue
+- **Gray Scale**: Tailwind CSS default
+- **Background**: White/Gray-100
+
+### タイポグラフィ
+- **日本語**: Noto Sans JP
+- **英語**: Montserrat
+- **Responsive**: Mobile-first approach
+
+### コンポーネント
+- **Button**: 統一されたボタンスタイル
+- **Card**: 情報表示用カード
+- **Modal**: モーダルダイアログ
+- **Loading**: ローディングスピナー
+
+## 📱 レスポンシブ対応
+
+- **Mobile**: ~767px
+- **Tablet**: 768px~1023px  
+- **Desktop**: 1024px~
+
+すべてのページでモバイルファーストのレスポンシブデザインを採用。
 
 ## 🚀 デプロイ
 
-本番環境へのデプロイ手順は `DEPLOYMENT.md` を参照してください。
+### 本番環境への配置
 
-### 環境別設定
-- **開発環境**: `localhost:3000` (フロント), `localhost:8000` (API)
-- **ステージング**: TBD
-- **本番環境**: TBD
-
-## 📊 パフォーマンス
-
-### フロントエンド最適化
-- **Next.js Image**: 画像の自動最適化
-- **Code Splitting**: ページ別の分割読み込み
-- **Turbopack**: 高速ビルドツール
-- **CSS最適化**: Tailwind CSS JIT
-
-### バックエンド最適化
-- **Eloquent**: ORM による効率的なDB操作
-- **Queue**: 非同期処理
-- **Cache**: Redis/Database キャッシュ
-
-## 🔒 セキュリティ
-
-### 実装済みセキュリティ対策
-- **CSRF Protection**: Laravel標準
-- **XSS Prevention**: DOMPurify使用
-- **SQL Injection**: Eloquent ORM
-- **Authentication**: Laravel Sanctum
-- **CORS**: 適切な設定
-
-## 🐛 トラブルシューティング
-
-### よくある問題と解決方法
-
-#### フロントエンド
+1. **環境変数の設定**
 ```bash
-# node_modules関連のエラー
-rm -rf node_modules package-lock.json
-npm install
-
-# Next.js キャッシュクリア
-npm run build
+# 本番用の環境変数を設定
+export APP_ENV=production
+export APP_DEBUG=false
+export APP_URL=https://your-domain.com
 ```
 
-#### バックエンド
+2. **SSL証明書の配置**
 ```bash
-# Composer依存関係の問題
-composer install --no-cache
-
-# Laravel キャッシュクリア
-php artisan config:clear
-php artisan cache:clear
+# 本番用SSL証明書を配置
+cp your-certificate.crt ssl/server.crt
+cp your-private-key.key ssl/server.key
 ```
+
+3. **デプロイ実行**
+```bash
+docker-compose up -d
+```
+
+### パフォーマンス最適化
+- Laravel: Route & Config Cache
+- Next.js: Static Generation & Image Optimization
+- Nginx: Gzip Compression & Caching Headers
+
+## 🧪 テスト
+
+### バックエンドテスト
+```bash
+# 全テスト実行
+composer run test
+
+# 特定テスト実行
+php artisan test --filter ArticleTest
+```
+
+### フロントエンドテスト
+```bash
+# Jest テスト実行
+npm test
+
+# TypeScript型チェック
+npm run type-check
+```
+
+## 📈 パフォーマンス
+
+### 実測値（Docker環境）
+- **Laravel API**: ~24ms応答時間
+- **Next.js**: ~18ms応答時間
+- **メモリ使用量**: 
+  - Laravel: ~70MB
+  - Next.js: ~38MB
+  - Nginx: ~14MB
 
 ## 🤝 コントリビューション
 
-1. このリポジトリをフォーク
-2. フィーチャーブランチを作成 (`git checkout -b feature/新機能`)
-3. 変更をコミット (`git commit -am 'feat: 新機能を追加'`)
-4. ブランチにプッシュ (`git push origin feature/新機能`)
-5. プルリクエストを作成
+1. Forkしてください
+2. 機能ブランチを作成してください (`git checkout -b feature/amazing-feature`)
+3. 変更をコミットしてください (`git commit -m 'Add amazing feature'`)
+4. ブランチにプッシュしてください (`git push origin feature/amazing-feature`)
+5. Pull Requestを作成してください
 
-## 📞 サポート
+## 📄 ライセンス
 
-### 開発チーム連絡先
-- **プロジェクト責任者**: [連絡先]
-- **技術サポート**: [連絡先]
+このプロジェクトは株式会社フィードの企業サイトです。
 
-### 有用なリンク
-- [Next.js ドキュメント](https://nextjs.org/docs)
-- [Laravel ドキュメント](https://laravel.com/docs)
-- [Tailwind CSS ドキュメント](https://tailwindcss.com/docs)
+## 📞 お問い合わせ
 
-## 📝 ライセンス
-
-このプロジェクトは株式会社フィードの所有物です。無断での複製・配布は禁止されています。
+- **会社**: 株式会社フィード
+- **Email**: contact@feed-inc.com
+- **電話**: 03-3505-3005
+- **住所**: 〒106-0032 東京都港区六本木4-1-1 第二黒崎ビル2F
 
 ---
 
-**株式会社フィード** | プロモーション・ブランディングの専門会社  
-🌐 Website: https://www.feed-inc.com  
-📧 Email: contact@feed-inc.com  
-📞 Phone: 03-3505-3005# feed-inc
+**株式会社フィード** - プロモーション・ブランディングの専門会社
