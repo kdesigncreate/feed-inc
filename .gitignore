@@ -7,12 +7,17 @@ vendor/
 dist/
 build/
 
-# Environment variables
+# Environment variables (機密情報)
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+.env.prod
+.env.docker
+.env.docker.*
+.env.backup.*
 
 # Logs
 logs/
@@ -64,3 +69,14 @@ backend/database/factories/
 
 # PM2
 .pm2/
+
+# Docker セキュリティ関連
+docker-compose.override.yml
+*.backup
+ssl/*.key
+ssl/*.pem
+ssl/*.crt
+
+# セキュリティスキャン結果
+security-report.txt
+audit-results.json
