@@ -94,3 +94,16 @@ production-check: ## 本番環境デプロイ前のチェック
 	@make security-audit
 	@make ssl-check
 	@echo "✅ 本番環境チェック完了"
+
+ci-security: ## CI環境での全セキュリティチェック
+	@echo "🤖 CI セキュリティチェック実行中..."
+	@make security-audit
+	@echo "📄 ファイル権限チェック実行中..."
+	@find . -name "*.sh" -exec chmod +x {} \;
+	@echo "✅ CI セキュリティチェック完了"
+
+setup-git-hooks: ## Git pre-commit フックをセットアップ
+	@echo "#!/bin/bash" > .git/hooks/pre-commit
+	@echo "make security-audit" >> .git/hooks/pre-commit
+	@chmod +x .git/hooks/pre-commit
+	@echo "✅ Git pre-commit フックをセットアップしました"

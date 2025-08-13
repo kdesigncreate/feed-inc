@@ -1,0 +1,200 @@
+name: Production Security Monitor
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  ssl-certificate-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check SSL certificate expiry
+      run: |
+        # Check SSL certificate expiry for production domains
+        domains=("feed-inc.com" "www.feed-inc.com")
+        
+        for domain in "${domains[@]}"; do
+          echo "🔍 Checking SSL certificate for $domain"
+          
+          expiry=$(echo | openssl s_client -servername $domain -connect $domain:443 2>/dev/null | openssl x509 -noout -dates | grep notAfter | cut -d= -f2)
+          expiry_epoch=$(date -d "$expiry" +%s 2>/dev/null || echo "0")
+          current_epoch=$(date +%s)
+          days_until_expiry=$(( (expiry_epoch - current_epoch) / 86400 ))
+          
+          echo "Certificate expires: $expiry"
+          echo "Days until expiry: $days_until_expiry"
+          
+          if [ $days_until_expiry -lt 30 ]; then
+            echo "⚠️ WARNING: SSL certificate for $domain expires in $days_until_expiry days!"
+            echo "ssl_warning=true" >> $GITHUB_ENV
+          elif [ $days_until_expiry -lt 7 ]; then
+            echo "🚨 CRITICAL: SSL certificate for $domain expires in $days_until_expiry days!"
+            echo "ssl_critical=true" >> $GITHUB_ENV
+          else
+            echo "✅ SSL certificate for $domain is valid for $days_until_expiry days"
+          fi
+          echo "---"
+        done
+        
+    - name: Create SSL expiry issue
+      if: env.ssl_critical == 'true' || env.ssl_warning == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = 'SSL Certificate Expiry Warning';
+          const label = context.env.ssl_critical ? 'critical' : 'warning';
+          
+          // Check if issue already exists
+          const issues = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            labels: 'ssl-expiry'
+          });
+          
+          if (issues.data.length === 0) {
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: `🔐 **SSL Certificate Expiry Alert**\n\nOne or more SSL certificates are expiring soon. Please renew them using:\n\n\`\`\`bash\nmake ssl-renew\n\`\`\`\n\nOr manually with Let's Encrypt:\n\n\`\`\`bash\n./scripts/renew-ssl.sh\n\`\`\`\n\n**Action required:** Update SSL certificates before they expire to avoid service disruption.\n\nThis issue was automatically created by the production security monitor.`,
+              labels: ['ssl-expiry', 'security', label]
+            });
+          }
+
+  security-headers-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check security headers
+      run: |
+        url="https://www.feed-inc.com"
+        echo "🔍 Checking security headers for $url"
+        
+        response=$(curl -sI "$url" || echo "CURL_FAILED")
+        
+        if [ "$response" = "CURL_FAILED" ]; then
+          echo "❌ Failed to connect to $url"
+          exit 1
+        fi
+        
+        # Required security headers
+        headers=(
+          "Strict-Transport-Security"
+          "X-Frame-Options"
+          "X-Content-Type-Options"
+          "X-XSS-Protection"
+          "Content-Security-Policy"
+          "Referrer-Policy"
+        )
+        
+        missing_headers=()
+        
+        for header in "${headers[@]}"; do
+          if echo "$response" | grep -qi "^$header:"; then
+            echo "✅ $header: Present"
+          else
+            echo "❌ $header: Missing"
+            missing_headers+=("$header")
+          fi
+        done
+        
+        if [ ${#missing_headers[@]} -gt 0 ]; then
+          echo "missing_security_headers=true" >> $GITHUB_ENV
+          echo "MISSING_HEADERS=${missing_headers[*]}" >> $GITHUB_ENV
+        fi
+        
+    - name: Create security headers issue
+      if: env.missing_security_headers == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = 'Missing Security Headers Detected';
+          const missingHeaders = process.env.MISSING_HEADERS;
+          
+          // Check if issue already exists
+          const issues = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            labels: 'security-headers'
+          });
+          
+          if (issues.data.length === 0) {
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: `🛡️ **Security Headers Missing**\n\nThe following security headers are missing from the production site:\n\n${missingHeaders.split(' ').map(h => `- ${h}`).join('\n')}\n\n**Action required:** Review and update nginx configuration or application middleware to include these headers.\n\n**Files to check:**\n- \`nginx.conf\`\n- \`frontend/middleware.ts\`\n- \`backend/app/Http/Middleware/SecurityHeaders.php\`\n\nThis issue was automatically created by the production security monitor.`,
+              labels: ['security-headers', 'security', 'bug']
+            });
+          }
+
+  endpoint-security-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Test API security
+      run: |
+        base_url="https://www.feed-inc.com/api"
+        
+        echo "🔍 Testing API endpoint security"
+        
+        # Test for proper CORS headers
+        cors_response=$(curl -sI -H "Origin: https://malicious-site.com" "$base_url/articles" || echo "CURL_FAILED")
+        
+        if echo "$cors_response" | grep -q "Access-Control-Allow-Origin: https://malicious-site.com"; then
+          echo "❌ CORS misconfiguration detected - allowing any origin"
+          echo "cors_issue=true" >> $GITHUB_ENV
+        else
+          echo "✅ CORS configuration appears secure"
+        fi
+        
+        # Test for information disclosure in error responses
+        error_response=$(curl -s "$base_url/nonexistent-endpoint" || echo "{}")
+        
+        if echo "$error_response" | grep -qi "stack\|trace\|debug\|error.*line"; then
+          echo "❌ Error response contains sensitive information"
+          echo "info_disclosure=true" >> $GITHUB_ENV
+        else
+          echo "✅ Error responses do not leak sensitive information"
+        fi
+        
+    - name: Create API security issue
+      if: env.cors_issue == 'true' || env.info_disclosure == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = 'API Security Issues Detected';
+          let body = '🚨 **API Security Issues Found**\n\n';
+          
+          if (process.env.cors_issue === 'true') {
+            body += '- CORS misconfiguration allows requests from unauthorized origins\n';
+          }
+          
+          if (process.env.info_disclosure === 'true') {
+            body += '- API error responses contain sensitive debugging information\n';
+          }
+          
+          body += '\n**Action required:** Review API security configurations and error handling.\n\nThis issue was automatically created by the production security monitor.';
+          
+          // Check if issue already exists
+          const issues = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            labels: 'api-security'
+          });
+          
+          if (issues.data.length === 0) {
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['api-security', 'security', 'critical']
+            });
+          }

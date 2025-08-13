@@ -1,0 +1,157 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run security audit daily at 3 AM UTC
+    - cron: '0 3 * * *'
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up environment
+      run: |
+        # Create .env.docker file for testing if it doesn't exist
+        if [ ! -f .env.docker ]; then
+          cp .env.docker.example .env.docker
+          
+          # Generate secure APP_KEY for testing
+          APP_KEY=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-32)
+          sed -i "s/^APP_KEY=.*/APP_KEY=base64:${APP_KEY}/" .env.docker
+          
+          # Set production environment
+          sed -i 's/^APP_ENV=.*/APP_ENV=production/' .env.docker
+          sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env.docker
+        fi
+        
+        # Set proper permissions
+        chmod 600 .env.docker
+      
+    - name: Install Docker Compose
+      run: |
+        sudo curl -L "https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+    
+    - name: Make scripts executable
+      run: |
+        chmod +x scripts/docker-security-audit.sh
+        chmod +x scripts/generate-keys.sh
+        
+    - name: Run Docker Security Audit
+      run: |
+        ./scripts/docker-security-audit.sh
+      
+    - name: Archive security audit results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-audit-results
+        path: |
+          .env.docker
+          docker-compose.yml
+          Dockerfile
+        retention-days: 30
+        
+    - name: Comment PR with security issues
+      if: failure() && github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '⚠️ **Security Audit Failed**\n\nThe security audit found issues that need to be addressed. Please check the workflow logs and fix the identified security problems before merging.\n\n**Common fixes:**\n- Ensure `.env.docker` has proper permissions (600)\n- Verify APP_KEY is properly set and not using default values\n- Check Docker security configurations\n- Review SSL certificate permissions\n\nRun `make security-audit` locally to reproduce the issues.'
+          })
+
+  docker-security-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'schedule'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build Docker image for scanning
+      run: |
+        docker build -t feed-inc-app:latest .
+        
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'feed-inc-app:latest'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+        
+    - name: Run Trivy config scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'config'
+        hide-progress: false
+        format: 'sarif'
+        output: 'trivy-config-results.sarif'
+        
+    - name: Upload config scan results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-config-results.sarif'
+
+  dependency-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+        
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+        
+    - name: Run npm audit
+      run: |
+        cd frontend
+        npm audit --audit-level=moderate
+        
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+        
+    - name: Install Composer dependencies
+      run: |
+        cd backend
+        composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
+        
+    - name: Run PHP security check
+      run: |
+        cd backend
+        # Install security checker
+        composer require --dev enlightn/security-checker
+        ./vendor/bin/security-checker security:check composer.lock

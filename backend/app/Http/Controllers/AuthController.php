@@ -12,19 +12,31 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        // Disable CSRF verification for this controller
-        $this->middleware('web')->except(['login']);
+        // Apply web middleware for session handling
+        $this->middleware('web');
     }
 
     public function login(Request $request)
     {
-        // Step by step debugging - return debug info instead of login
+        $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        // For SPA Cookie authentication, we use the session guard
+        auth('web')->login($user, $request->boolean('remember'));
+
         return response()->json([
-            'message' => 'Debug login endpoint',
-            'method' => $request->method(),
-            'input' => $request->all(),
-            'database_users_count' => \DB::table('users')->count(),
-            'timestamp' => now()
+            'user' => $user->only(['id', 'name', 'email', 'role']),
+            'message' => 'Logged in successfully'
         ]);
     }
 
@@ -38,27 +50,21 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        try {
-            // Manual token validation for web routes
-            $token = $request->bearerToken();
-            
-            if (!$token) {
-                return response()->json(['message' => 'No token provided'], 401);
-            }
+        auth('web')->logout();
+        
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-            $personalAccessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
-            
-            if (!$personalAccessToken) {
-                return response()->json(['message' => 'Invalid token'], 401);
-            }
-
-            $personalAccessToken->delete();
-
-            return response()->json(['message' => 'Logged out successfully']);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Logout error: ' . $e->getMessage(),
-            ], 500);
-        }
+        return response()->json(['message' => 'Logged out successfully']);
+    }
+    
+    public function user(Request $request)
+    {
+        return response()->json($request->user());
+    }
+    
+    public function csrf(Request $request)
+    {
+        return response()->json(['csrf_token' => csrf_token()]);
     }
 }

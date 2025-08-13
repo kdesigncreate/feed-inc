@@ -76,7 +76,7 @@ if [ -f ".env.docker" ]; then
     fi
     
     # APP_KEYの品質チェック（安全なアプローチ）
-    APP_KEY_VALUE=$(grep "^APP_KEY=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2)
+    APP_KEY_VALUE=$(grep "^APP_KEY=" .env.docker 2>/dev/null | cut -d'=' -f2)
     if [ -n "$APP_KEY_VALUE" ]; then
         # 長さチェック（適切なLaravelキーは50文字以上）
         if [ ${#APP_KEY_VALUE} -lt 50 ]; then
@@ -213,6 +213,62 @@ else
     warn "Docker volumeが見つかりません"
     WARNINGS_FOUND=$((WARNINGS_FOUND + 1))
 fi
+
+# 6. Git secrets チェック
+log "6. Git リポジトリセキュリティチェック"
+
+# .gitignore で機密ファイルが除外されているかチェック
+if [ -f ".gitignore" ]; then
+    required_ignores=(".env" ".env.*" "ssl/*.key" "ssl/*.crt" "*.backup")
+    
+    for ignore in "${required_ignores[@]}"; do
+        if grep -q "^$ignore" .gitignore; then
+            success ".gitignore: $ignore が除外されています"
+        else
+            warn ".gitignore: $ignore が除外されていません"
+            WARNINGS_FOUND=$((WARNINGS_FOUND + 1))
+        fi
+    done
+else
+    error ".gitignore ファイルが見つかりません"
+    ISSUES_FOUND=$((ISSUES_FOUND + 1))
+fi
+
+# Git履歴に機密情報が含まれていないかの簡易チェック
+if git rev-parse --git-dir > /dev/null 2>&1; then
+    suspicious_patterns=("password" "secret" "key" "token" "private")
+    
+    for pattern in "${suspicious_patterns[@]}"; do
+        if git log --oneline --all | grep -qi "$pattern"; then
+            warn "Git履歴に '$pattern' を含むコミットが見つかりました"
+            WARNINGS_FOUND=$((WARNINGS_FOUND + 1))
+        fi
+    done
+    
+    success "Git リポジトリチェック完了"
+else
+    warn "Gitリポジトリではありません"
+fi
+
+# 7. 設定ファイルの権限チェック
+log "7. 重要ファイルの権限チェック"
+
+important_files=("docker-compose.yml" "nginx.conf" "backend/config/database.php")
+
+for file in "${important_files[@]}"; do
+    if [ -f "$file" ]; then
+        perm=$(stat -c "%a" "$file")
+        if [ "$perm" = "600" ] || [ "$perm" = "644" ]; then
+            success "$file の権限: 適切 ($perm)"
+        elif [ "$perm" = "777" ] || [ "$perm" = "666" ]; then
+            error "$file の権限が危険: $perm"
+            ISSUES_FOUND=$((ISSUES_FOUND + 1))
+        else
+            warn "$file の権限: $perm (確認推奨)"
+            WARNINGS_FOUND=$((WARNINGS_FOUND + 1))
+        fi
+    fi
+done
 
 # 結果サマリー
 log ""
