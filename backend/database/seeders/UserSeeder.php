@@ -18,7 +18,8 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Admin User',
                 'email' => 'admin@feed-inc.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('Admin@Feed2025!'),
+                'role' => 'admin',
                 'email_verified_at' => now(),
             ]
         );

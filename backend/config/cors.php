@@ -22,8 +22,8 @@ return [
     'allowed_origins' => [
         'http://localhost:3000',
         'http://127.0.0.1:3000',
-        'https://your-domain.com',
-        'https://www.your-domain.com'
+        'https://feed-inc.com',
+        'https://www.feed-inc.com',
     ],
 
     'allowed_origins_patterns' => [],

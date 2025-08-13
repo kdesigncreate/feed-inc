@@ -1,5 +1,8 @@
 FROM php:8.2-fpm
 
+# セキュリティ: 非rootユーザーを作成
+RUN groupadd -r appgroup && useradd -r -g appgroup -d /var/www/html -s /sbin/nologin appuser
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
@@ -9,14 +12,15 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    sqlite3 \
-    libsqlite3-dev \
-    supervisor \
+    default-mysql-client \
+    default-libmysqlclient-dev \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/* \
+    && rm -rf /var/tmp/*
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd
+# Install PHP extensions for MySQL
+RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -39,17 +43,22 @@ RUN rm -rf bootstrap/cache/* \
 
 # Create directories and set permissions
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
-    && mkdir -p database \
-    && touch database/database.sqlite \
-    && chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache database
+    && chown -R appuser:appgroup /var/www/html \
+    && chmod -R 750 storage bootstrap/cache \
+    && chmod -R 644 /var/www/html \
+    && chmod -R 755 /var/www/html/public
 
-# Copy supervisor configuration
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# セキュリティ設定: 機密ファイルの権限を厳格化
+RUN chmod 600 .env* 2>/dev/null || true \
+    && find /var/www/html -name "*.log" -exec chmod 640 {} \; \
+    && find /var/www/html -type d -exec chmod 750 {} \;
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# セキュリティ: 非rootユーザーに切り替え
+USER appuser
 
 # Expose port
 EXPOSE 9000

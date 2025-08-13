@@ -10,78 +10,55 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
+    public function __construct()
+    {
+        // Disable CSRF verification for this controller
+        $this->middleware('web')->except(['login']);
+    }
+
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-
-        if (! Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Invalid credentials',
-            ], 401);
-        }
-
-        // Sanctumトークンを生成
-        $token = $user->createToken('admin-token')->plainTextToken;
-
+        // Step by step debugging - return debug info instead of login
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'email_verified_at' => $user->email_verified_at,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-            ],
+            'message' => 'Debug login endpoint',
+            'method' => $request->method(),
+            'input' => $request->all(),
+            'database_users_count' => \DB::table('users')->count(),
+            'timestamp' => now()
         ]);
     }
 
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Password::min(8)],
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = $user->createToken('admin-token')->plainTextToken;
-
+        // Registration is disabled for security reasons
         return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-            ],
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 201);
+            'error' => 'Registration is disabled. Please contact administrator.',
+        ], 403);
     }
 
     public function logout(Request $request)
     {
-        // 現在のトークンを削除
-        $request->user()->currentAccessToken()->delete();
+        try {
+            // Manual token validation for web routes
+            $token = $request->bearerToken();
+            
+            if (!$token) {
+                return response()->json(['message' => 'No token provided'], 401);
+            }
 
-        return response()->json(['message' => 'Logged out successfully']);
+            $personalAccessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+            
+            if (!$personalAccessToken) {
+                return response()->json(['message' => 'Invalid token'], 401);
+            }
+
+            $personalAccessToken->delete();
+
+            return response()->json(['message' => 'Logged out successfully']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Logout error: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

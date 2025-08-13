@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Rules\SafeHtmlContent;
+use App\Rules\SafeImagePath;
+use App\Rules\CategoryWhitelist;
+use Illuminate\Support\Facades\Validator;
 
 class ArticleController extends Controller
 {
@@ -13,9 +17,25 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
+        // Validate input parameters
+        $validator = Validator::make($request->all(), [
+            'category' => ['nullable', 'string', new CategoryWhitelist()],
+            'published' => 'nullable|boolean',
+            'search' => 'nullable|string|max:100|regex:/^[a-zA-Z0-9\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DBF]+$/',
+            'page' => 'nullable|integer|min:1|max:1000',
+            'per_page' => 'nullable|integer|min:1|max:100',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Invalid input parameters',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         $query = Article::query();
 
-        // フィルタリング
+        // フィルタリング（バリデーション済み）
         if ($request->has('category') && $request->category !== 'all') {
             $query->where('category', $request->category);
         }
@@ -24,9 +44,9 @@ class ArticleController extends Controller
             $query->where('is_published', $request->published);
         }
 
-        // 検索
-        if ($request->has('search')) {
-            $search = $request->search;
+        // 検索（サニタイズ済み）
+        if ($request->has('search') && !empty($request->search)) {
+            $search = trim($request->search);
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhere('content', 'like', "%{$search}%");
@@ -50,29 +70,41 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string|max:100000',
-            'excerpt' => 'nullable|string|max:1000',
-            'category' => 'required|string|max:255',
-            'tag' => 'nullable|string|max:255',
-            'author' => 'required|string|max:255',
-            'featured_image' => 'nullable|string|max:255',
-            'is_published' => 'boolean',
-            'published_at' => 'nullable|date',
+        $validator = Validator::make($request->all(), [
+            'title' => ['required', 'string', 'min:3', 'max:255', new SafeHtmlContent()],
+            'content' => ['required', 'string', 'min:10', 'max:100000', new SafeHtmlContent()],
+            'excerpt' => ['nullable', 'string', 'max:1000', new SafeHtmlContent()],
+            'category' => ['required', new CategoryWhitelist()],
+            'tag' => 'nullable|string|max:100|regex:/^[a-zA-Z0-9\s\/\-_,]+$/',
+            'author' => 'required|string|min:2|max:100|regex:/^[a-zA-Z\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+$/',
+            'featured_image' => ['nullable', new SafeImagePath()],
+            'is_published' => 'nullable|boolean',
+            'published_at' => 'nullable|date|after_or_equal:today',
         ]);
 
-        $article = Article::create([
-            'title' => $request->title,
-            'slug' => Str::slug($request->title.'-'.time()),
-            'content' => $request->content,
-            'excerpt' => $request->excerpt,
-            'category' => $request->category,
-            'tag' => $request->tag ?? 'promo/insights',
-            'author' => $request->author,
-            'featured_image' => $request->featured_image,
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Additional content sanitization
+        $sanitizedData = [
+            'title' => strip_tags(trim($request->title)),
+            'content' => $this->sanitizeContent($request->content),
+            'excerpt' => $request->excerpt ? strip_tags(trim($request->excerpt)) : null,
+            'category' => trim($request->category),
+            'tag' => $request->tag ? trim($request->tag) : 'promo/insights',
+            'author' => trim($request->author),
+            'featured_image' => $request->featured_image ? trim($request->featured_image) : null,
             'is_published' => $request->is_published ?? true,
             'published_at' => $request->published_at ?? now(),
+        ];
+
+        $article = Article::create([
+            ...$sanitizedData,
+            'slug' => $this->generateUniqueSlug($sanitizedData['title']),
         ]);
 
         return response()->json($article, 201);
@@ -177,5 +209,59 @@ class ArticleController extends Controller
         }
 
         return response()->json($result);
+    }
+
+    /**
+     * Sanitize content while preserving safe HTML tags
+     */
+    private function sanitizeContent(string $content): string
+    {
+        // Allow only safe HTML tags for article content
+        $allowedTags = '<p><br><strong><em><u><h1><h2><h3><h4><h5><h6><ul><ol><li><blockquote><a><img>';
+        
+        // Strip dangerous tags first
+        $content = strip_tags($content, $allowedTags);
+        
+        // Remove dangerous attributes from allowed tags
+        $content = preg_replace_callback('/<(\w+)([^>]*)>/', function($matches) {
+            $tag = $matches[1];
+            $attributes = $matches[2];
+            
+            // For links, allow only href, title, target, rel
+            if ($tag === 'a') {
+                $attributes = preg_replace('/\s(?!href|title|target|rel)[a-zA-Z\-]+="[^"]*"/', '', $attributes);
+                $attributes = preg_replace('/\son[a-zA-Z]+="[^"]*"/', '', $attributes); // Remove event handlers
+            }
+            
+            // For images, allow only src, alt, title, width, height
+            if ($tag === 'img') {
+                $attributes = preg_replace('/\s(?!src|alt|title|width|height)[a-zA-Z\-]+="[^"]*"/', '', $attributes);
+                $attributes = preg_replace('/\son[a-zA-Z]+="[^"]*"/', '', $attributes); // Remove event handlers
+            }
+            
+            // Remove all event handlers from any tag
+            $attributes = preg_replace('/\son[a-zA-Z]+="[^"]*"/', '', $attributes);
+            
+            return "<{$tag}{$attributes}>";
+        }, $content);
+        
+        return trim($content);
+    }
+
+    /**
+     * Generate unique slug for article
+     */
+    private function generateUniqueSlug(string $title): string
+    {
+        $baseSlug = Str::slug($title);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (Article::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
     }
 }

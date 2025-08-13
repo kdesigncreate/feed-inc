@@ -14,27 +14,51 @@ if [ ! -d "/var/www/html/database" ]; then
     mkdir -p /var/www/html/database
 fi
 
-# Create SQLite database if it doesn't exist
-if [ ! -f "/var/www/html/database/database.sqlite" ]; then
-    log "Creating SQLite database..."
-    touch /var/www/html/database/database.sqlite
-    chmod 664 /var/www/html/database/database.sqlite
-fi
+# Skip SQLite creation - using MySQL instead
+log "Skipping SQLite creation - using MySQL database..."
 
-# Set proper permissions
-log "Setting permissions..."
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+# Set proper permissions with security focus
+log "Setting secure permissions..."
+# Skip chown operations to avoid Docker permission issues
+# chown -R appuser:appgroup /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+chmod -R 750 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database 2>/dev/null || true
+chmod 600 /var/www/html/database/database.sqlite 2>/dev/null || true
 
 # Clear bootstrap cache to avoid dev dependency issues
 log "Clearing bootstrap cache..."
 rm -rf /var/www/html/bootstrap/cache/*
 
-# Generate APP_KEY if not set
-if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:dGVzdF9rZXlfZm9yX2RlbW9fcHVycG9zZXNfb25seQ==" ]; then
-    log "Generating application key..."
-    php artisan key:generate --force
+APP_KEY_VAL=$(printenv APP_KEY || true)
+if [ -z "$APP_KEY_VAL" ]; then
+    log "ERROR: APP_KEY environment variable is not set!"
+    log "Please generate a new key using: docker exec <container> php artisan key:generate --show"
+    log "Then set APP_KEY in your environment configuration."
+    exit 1
 fi
+
+# デフォルト・危険なキーパターンの検証
+# 長さチェック（32バイト = 44文字のbase64）
+if [ ${#APP_KEY_VAL} -lt 50 ]; then
+    log "ERROR: APP_KEY appears to be too short for secure use!"
+    log "Please generate a proper Laravel application key."
+    exit 1
+fi
+
+# base64形式チェック
+if ! echo "$APP_KEY_VAL" | grep -q "^base64:"; then
+    log "ERROR: APP_KEY must be in base64: format!"
+    log "Please generate a new key using: php artisan key:generate"
+    exit 1
+fi
+
+# 既知の弱いパターンのチェック（実際のキーは含めない）
+if echo "$APP_KEY_VAL" | grep -qE "base64:(dGVzdA|VGVzdA|dGVtcA|VGVtcA)"; then
+    log "ERROR: APP_KEY appears to contain test/demo patterns!"
+    log "Please generate a new secure key for production use."
+    exit 1
+fi
+
+log "APP_KEY validation passed."
 
 # Run migrations
 log "Running database migrations..."
@@ -42,6 +66,12 @@ php artisan migrate --force
 
 # Cache configuration for production
 if [ "$APP_ENV" = "production" ]; then
+    log "Clearing existing caches first..."
+    php artisan config:clear
+    php artisan route:clear
+    php artisan view:clear
+    php artisan cache:clear
+    
     log "Optimizing for production..."
     php artisan config:cache
     php artisan route:cache
