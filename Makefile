@@ -76,11 +76,11 @@ backup: ## データベースとSSL証明書をバックアップ
 
 install-cron: ## SSL証明書自動更新のcronジョブをインストール
 	@echo "# Feed Inc. SSL証明書自動更新" | crontab -l 2>/dev/null | grep -v "Feed Inc. SSL" | crontab -
-@(crontab -l 2>/dev/null; echo "0 3 * * * cd $(PWD) && ./scripts/renew-ssl.sh >> ssl/cron.log 2>&1") | crontab -
+	@(crontab -l 2>/dev/null; echo "0 3 * * * cd $(PWD) && ./scripts/renew-ssl.sh >> ssl/cron.log 2>&1") | crontab -
 	@echo "✅ Cronジョブをインストールしました（毎日午前3時に実行）"
 
 remove-cron: ## SSL証明書自動更新のcronジョブを削除
-@crontab -l 2>/dev/null | grep -v "renew-ssl.sh" | crontab -
+	@crontab -l 2>/dev/null | grep -v "renew-ssl.sh" | crontab -
 	@echo "✅ Cronジョブを削除しました"
 
 # 開発支援

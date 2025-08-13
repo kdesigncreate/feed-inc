@@ -219,16 +219,34 @@ log "6. Git リポジトリセキュリティチェック"
 
 # .gitignore で機密ファイルが除外されているかチェック
 if [ -f ".gitignore" ]; then
-    required_ignores=(".env" ".env.*" "ssl/*.key" "ssl/*.crt" "*.backup")
+    # .gitignoreの内容をチェック
+    if grep -q "^\.env" .gitignore; then
+        success ".gitignore: .env ファイルが除外されています"
+    else
+        warn ".gitignore: .env ファイルが除外されていません"
+        WARNINGS_FOUND=$((WARNINGS_FOUND + 1))
+    fi
     
-    for ignore in "${required_ignores[@]}"; do
-        if grep -q "^$ignore" .gitignore; then
-            success ".gitignore: $ignore が除外されています"
-        else
-            warn ".gitignore: $ignore が除外されていません"
-            WARNINGS_FOUND=$((WARNINGS_FOUND + 1))
-        fi
-    done
+    if grep -q "ssl/.*\.key" .gitignore || grep -q "ssl/\*\.key" .gitignore; then
+        success ".gitignore: SSL秘密鍵が除外されています"
+    else
+        warn ".gitignore: SSL秘密鍵が除外されていません"
+        WARNINGS_FOUND=$((WARNINGS_FOUND + 1))
+    fi
+    
+    if grep -q "ssl/.*\.crt" .gitignore || grep -q "ssl/\*\.crt" .gitignore; then
+        success ".gitignore: SSL証明書が除外されています"
+    else
+        warn ".gitignore: SSL証明書が除外されていません"
+        WARNINGS_FOUND=$((WARNINGS_FOUND + 1))
+    fi
+    
+    if grep -q ".*\.backup" .gitignore || grep -q "\*\.backup" .gitignore; then
+        success ".gitignore: バックアップファイルが除外されています"
+    else
+        warn ".gitignore: バックアップファイルが除外されていません"
+        WARNINGS_FOUND=$((WARNINGS_FOUND + 1))
+    fi
 else
     error ".gitignore ファイルが見つかりません"
     ISSUES_FOUND=$((ISSUES_FOUND + 1))
