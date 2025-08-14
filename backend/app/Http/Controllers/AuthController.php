@@ -10,11 +10,6 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
-        // Apply web middleware for session handling
-        $this->middleware('web');
-    }
 
     public function login(Request $request)
     {
@@ -60,7 +55,8 @@ class AuthController extends Controller
     
     public function user(Request $request)
     {
-        return response()->json($request->user());
+        // For SPA authentication, use the authenticated user from the session
+        return response()->json(auth()->user());
     }
     
     public function csrf(Request $request)

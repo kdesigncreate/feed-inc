@@ -24,6 +24,7 @@ return [
         'http://127.0.0.1:3000',
         'https://feed-inc.com',
         'https://www.feed-inc.com',
+        'https://162.43.87.222',
     ],
 
     'allowed_origins_patterns' => [],

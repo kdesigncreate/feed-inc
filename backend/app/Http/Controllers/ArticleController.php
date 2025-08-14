@@ -21,7 +21,7 @@ class ArticleController extends Controller
         $validator = Validator::make($request->all(), [
             'category' => ['nullable', 'string', new CategoryWhitelist()],
             'published' => 'nullable|boolean',
-            'search' => 'nullable|string|max:100|regex:/^[a-zA-Z0-9\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DBF]+$/',
+            'search' => 'nullable|string|max:100|regex:/^[a-zA-Z0-9\s\p{Hiragana}\p{Katakana}\p{Han}]+$/u',
             'page' => 'nullable|integer|min:1|max:1000',
             'per_page' => 'nullable|integer|min:1|max:100',
         ]);
@@ -76,7 +76,7 @@ class ArticleController extends Controller
             'excerpt' => ['nullable', 'string', 'max:1000', new SafeHtmlContent()],
             'category' => ['required', new CategoryWhitelist()],
             'tag' => 'nullable|string|max:100|regex:/^[a-zA-Z0-9\s\/\-_,]+$/',
-            'author' => 'required|string|min:2|max:100|regex:/^[a-zA-Z\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+$/',
+            'author' => 'required|string|min:2|max:100|regex:/^[a-zA-Z\s\p{Hiragana}\p{Katakana}\p{Han}]+$/u',
             'featured_image' => ['nullable', new SafeImagePath()],
             'is_published' => 'nullable|boolean',
             'published_at' => 'nullable|date|after_or_equal:today',
