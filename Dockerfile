@@ -56,9 +56,7 @@ RUN chmod 600 .env* 2>/dev/null || true \
     && find /var/www/html -name "*.log" -exec chmod 640 {} \; \
     && find /var/www/html -type d -exec chmod 750 {} \;
 
-# Copy simple entrypoint script
-COPY docker-entrypoint-simple.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Final setup
 
 # セキュリティ: 非rootユーザーに切り替え
 USER appuser
@@ -66,6 +64,5 @@ USER appuser
 # Expose port
 EXPOSE 9000
 
-# Start with entrypoint
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["php-fpm"]
+# Start PHP-FPM directly in foreground
+CMD ["php-fpm", "-F"]
