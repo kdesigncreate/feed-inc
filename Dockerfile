@@ -56,8 +56,8 @@ RUN chmod 600 .env* 2>/dev/null || true \
     && find /var/www/html -name "*.log" -exec chmod 640 {} \; \
     && find /var/www/html -type d -exec chmod 750 {} \;
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
+# Copy simple entrypoint script
+COPY docker-entrypoint-simple.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # セキュリティ: 非rootユーザーに切り替え
