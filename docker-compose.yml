@@ -77,15 +77,15 @@ services:
     # セキュリティ制約
     security_opt:
       - no-new-privileges:true
-    # Next.js はビルド済スタンドアロンで基本書込不要。必要なら /app/.next/cache を tmpfs 化
-    read_only: true
+    # Next.js は画像最適化キャッシュのため /app/.next/cache に書き込み必要
+    read_only: false
     tmpfs:
       - /tmp:noexec,nosuid,size=100m
     # depends_on:
     #   laravel:
     #     condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000 >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost 3000 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
