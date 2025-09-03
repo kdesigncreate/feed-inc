@@ -9,6 +9,7 @@ use App\Rules\SafeHtmlContent;
 use App\Rules\SafeImagePath;
 use App\Rules\CategoryWhitelist;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
@@ -171,6 +172,76 @@ class ArticleController extends Controller
         $article->delete();
 
         return response()->json(['message' => 'Article deleted successfully']);
+    }
+
+    /**
+     * Upload thumbnail image
+     */
+    public function uploadThumbnail(Request $request)
+    {
+        // Debug: Log request details
+        \Log::info('Upload request received', [
+            'files' => $request->files->all(),
+            'data' => $request->all(),
+            'headers' => $request->headers->all(),
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'thumbnail' => [
+                'required',
+                'file',
+                'image',
+                'mimes:jpeg,jpg,png,webp',
+                'max:5120', // 5MB max
+                'dimensions:min_width=200,min_height=200,max_width=2000,max_height=2000'
+            ]
+        ]);
+
+        if ($validator->fails()) {
+            \Log::error('Validation failed', ['errors' => $validator->errors()]);
+            return response()->json([
+                'message' => 'Invalid image file',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $file = $request->file('thumbnail');
+            \Log::info('File validated successfully', [
+                'original_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'mime_type' => $file->getMimeType()
+            ]);
+            
+            // Generate unique filename
+            $extension = $file->getClientOriginalExtension();
+            $filename = 'thumbnail_' . time() . '_' . Str::random(10) . '.' . $extension;
+            \Log::info('Generated filename', ['filename' => $filename]);
+            
+            // Store in public/images/thumbnails directory
+            $path = $file->storeAs('images/thumbnails', $filename, 'public');
+            \Log::info('File stored', ['path' => $path]);
+            
+            // Return the public storage URL
+            $url = '/storage/' . $path;
+            \Log::info('Upload successful', ['url' => $url, 'path' => $path]);
+            
+            return response()->json([
+                'message' => 'Thumbnail uploaded successfully',
+                'url' => $url,
+                'path' => $path
+            ], 200);
+            
+        } catch (\Exception $e) {
+            \Log::error('Upload failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'message' => 'Failed to upload thumbnail',
+                'error' => 'Internal server error'
+            ], 500);
+        }
     }
 
     /**

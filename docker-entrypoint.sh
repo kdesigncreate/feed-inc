@@ -60,9 +60,31 @@ fi
 
 log "APP_KEY validation passed."
 
-# Run migrations
-log "Running database migrations..."
-php artisan migrate --force
+# Wait for database and run migrations
+log "Waiting for database connection..."
+retry_count=0
+max_retries=30
+
+while [ $retry_count -lt $max_retries ]; do
+    if php artisan migrate:status --no-interaction >/dev/null 2>&1; then
+        log "Database is accessible, running migrations..."
+        php artisan migrate --force
+        
+        # Run seeders if needed
+        log "Running database seeders..."
+        php artisan db:seed --force --class=UserSeeder
+        break
+    else
+        retry_count=$((retry_count + 1))
+        log "Database not ready yet (attempt $retry_count/$max_retries), waiting..."
+        sleep 3
+    fi
+done
+
+if [ $retry_count -eq $max_retries ]; then
+    log "WARNING: Could not connect to database after $max_retries attempts"
+    log "Continuing without migrations - they will need to be run manually"
+fi
 
 # Cache configuration for production
 if [ "$APP_ENV" = "production" ]; then

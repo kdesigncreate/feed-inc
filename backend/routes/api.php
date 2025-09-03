@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ImageUploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,34 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{slug}', [ArticleController::class, 'show']);
 Route::get('/categories', [ArticleController::class, 'categories']);
+
+// Upload thumbnail endpoint (requires authentication)
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/upload-thumbnail', [ImageUploadController::class, 'uploadThumbnail']);
+    Route::post('/articles/upload-thumbnail', [ImageUploadController::class, 'uploadThumbnail']);
+});
+
+// Storage file serving (public access)
+Route::get('/storage/{path}', function ($path) {
+    \Log::info('API storage route accessed', ['path' => $path]);
+    
+    // Handle nested paths properly
+    $filePath = storage_path('app/public/' . $path);
+    \Log::info('Looking for file via API', ['filePath' => $filePath, 'exists' => file_exists($filePath)]);
+    
+    if (!file_exists($filePath)) {
+        \Log::warning('File not found via API', ['path' => $path, 'filePath' => $filePath]);
+        return response()->json(['error' => 'File not found', 'path' => $path], 404);
+    }
+    
+    $mimeType = mime_content_type($filePath);
+    \Log::info('Serving file via API', ['path' => $path, 'mimeType' => $mimeType]);
+    
+    return response()->file($filePath, [
+        'Content-Type' => $mimeType,
+        'Cache-Control' => 'public, max-age=2592000', // 30 days
+    ]);
+})->where('path', '.*');
 
 // 管理者用API（認証＋admin権限必要）
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
