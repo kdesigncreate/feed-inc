@@ -63,7 +63,7 @@ log "APP_KEY validation passed."
 # Wait for database and run migrations
 log "Waiting for database connection..."
 retry_count=0
-max_retries=30
+max_retries=5
 
 while [ $retry_count -lt $max_retries ]; do
     if php artisan migrate:status --no-interaction >/dev/null 2>&1; then
@@ -110,11 +110,10 @@ fi
 
 log "Laravel container initialization completed!"
 
-# Start PHP-FPM in background if not already running
-if ! pgrep php-fpm > /dev/null; then
-    log "Starting PHP-FPM in background..."
-    php-fpm -D
-fi
+# Always start PHP-FPM first, regardless of database status
+log "Starting PHP-FPM in background..."
+php-fpm -D || php-fpm
 
-# Execute the main command
+# Execute the main command (but PHP-FPM is already running)
+log "PHP-FPM started, keeping container alive..."
 exec "$@"
