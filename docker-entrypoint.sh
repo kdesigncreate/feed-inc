@@ -84,6 +84,8 @@ done
 if [ $retry_count -eq $max_retries ]; then
     log "WARNING: Could not connect to database after $max_retries attempts"
     log "Continuing without migrations - they will need to be run manually"
+    # Skip database-dependent operations
+    export SKIP_DB_OPERATIONS=true
 fi
 
 # Cache configuration for production
@@ -107,6 +109,12 @@ if [ ! -L "/var/www/html/public/storage" ]; then
 fi
 
 log "Laravel container initialization completed!"
+
+# Start PHP-FPM in background if not already running
+if ! pgrep php-fpm > /dev/null; then
+    log "Starting PHP-FPM in background..."
+    php-fpm -D
+fi
 
 # Execute the main command
 exec "$@"
