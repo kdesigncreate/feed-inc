@@ -74,6 +74,13 @@ make dev
 
 # Security audit
 make security-audit
+
+# Additional operations
+make restart              # Restart all services
+make backup               # Backup database and SSL certificates
+make production-check     # Pre-deployment checks
+make ci-security         # CI security checks
+make setup-git-hooks     # Setup pre-commit security hooks
 ```
 
 ## Architecture Overview
@@ -105,7 +112,10 @@ make security-audit
 - `backend/routes/api.php` - API route definitions
 - `backend/app/Http/Controllers/AuthController.php` - Authentication logic
 - `backend/app/Http/Controllers/ArticleController.php` - Article CRUD operations
+- `backend/app/Http/Controllers/ImageUploadController.php` - Image upload handling
 - `backend/app/Http/Middleware/AuthenticateJson.php` - Custom auth middleware
+- `backend/app/Http/Middleware/AdminMiddleware.php` - Admin role verification
+- `backend/app/Http/Middleware/SecurityHeaders.php` - Security headers middleware
 - `backend/config/cors.php` - CORS configuration
 - `backend/database/migrations/` - Database schema definitions
 
@@ -114,6 +124,8 @@ make security-audit
 - `frontend/src/contexts/AuthContext.tsx` - Authentication state management
 - `frontend/src/lib/api.ts` - API client with CSRF handling
 - `frontend/src/components/ProtectedRoute.tsx` - Route protection
+- `frontend/src/components/CSPProvider.tsx` - Content Security Policy provider
+- `frontend/src/components/PerformanceOptimizer.tsx` - Performance optimization component
 - `frontend/middleware.ts` - Next.js middleware for security headers
 
 ### Configuration Files
@@ -125,15 +137,30 @@ make security-audit
 ## Database
 
 - **Primary**: MySQL 8.0
-- **Tables**: users, articles, sessions, personal_access_tokens
+- **Tables**: users (with admin role support), articles (with slug-based routing), sessions, personal_access_tokens, cache, jobs
 - **Seeding**: Admin user and sample articles via seeders
+- **Migrations**: Located in `backend/database/migrations/`
+- **Test Database**: `feed_inc_test` (configured in `backend/phpunit.xml`)
 
 ## Testing
 
 ### Backend Testing
 - PHPUnit configuration in `backend/phpunit.xml`
 - Test database: `feed_inc_test` (MySQL)
-- Run tests: `./vendor/bin/phpunit --testdox`
+- Run tests: 
+  ```bash
+  cd backend
+  ./vendor/bin/phpunit --testdox
+  # OR
+  composer test
+  php artisan test
+  
+  # Single test file
+  ./vendor/bin/phpunit tests/Feature/AuthTest.php
+  
+  # Specific test method
+  ./vendor/bin/phpunit --filter testLogin
+  ```
 - Test coverage includes:
   - Authentication (login, logout, user retrieval, CSRF)
   - Article management (CRUD operations, permissions)
@@ -141,7 +168,11 @@ make security-audit
 
 ### Frontend Testing
 - ESLint configuration for code quality
-- Run linting with `npm run lint`
+- Run linting: 
+  ```bash
+  cd frontend
+  npm run lint
+  ```
 
 ## Notes
 
@@ -150,3 +181,62 @@ make security-audit
 - CSRF tokens are handled automatically via Laravel Sanctum SPA authentication
 - All Docker services include security hardening (no-new-privileges, read-only where possible)
 - SSL certificates can be managed via Makefile commands for both development and production
+
+## Server Deployment
+
+### Production Server Details
+- **Server**: root@162.43.87.222
+- **SSH Key**: /home/kenta/.ssh/feed-sshkey.pem
+- **Project Path**: /var/www/feed-inc/
+- **Database**: MySQL (running in Docker container)
+
+### Deployment Process
+When deploying changes to the production server, follow these steps **exactly**:
+
+```bash
+# 1. Upload changes (excluding build artifacts)
+rsync -avz -e "ssh -i /home/kenta/.ssh/feed-sshkey.pem" \
+  --exclude=node_modules --exclude=vendor --exclude=.git \
+  /home/kenta/feed-inc/ root@162.43.87.222:/var/www/feed-inc/
+
+# 2. SSH into server and restart containers
+ssh -i /home/kenta/.ssh/feed-sshkey.pem root@162.43.87.222 \
+  "cd /var/www/feed-inc && docker-compose restart"
+
+# 3. Wait for containers to fully start (important!)
+sleep 15
+
+# 4. Verify services are running
+ssh -i /home/kenta/.ssh/feed-sshkey.pem root@162.43.87.222 \
+  "cd /var/www/feed-inc && docker-compose ps"
+```
+
+### Important Notes for Deployment
+- **NEVER** run fresh migrations on production unless explicitly requested
+- **NEVER** change database configuration (.env files) without checking current setup first
+- **ALWAYS** restart Docker containers after uploading changes
+- **ALWAYS** wait for containers to fully start before proceeding
+- The production database is MySQL in Docker, not SQLite
+- Frontend builds are handled automatically by Docker containers
+
+### Common Deployment Issues and Solutions
+1. **Database connection errors**: Restart containers and wait for MySQL to fully initialize
+2. **Permission issues**: Files are automatically handled by Docker user permissions
+3. **Cache issues**: Container restart clears all necessary caches automatically
+4. **Frontend not updating**: Next.js builds automatically in production mode
+
+### Verification Commands
+```bash
+# Check all services are healthy
+ssh -i /home/kenta/.ssh/feed-sshkey.pem root@162.43.87.222 \
+  "cd /var/www/feed-inc && docker-compose ps"
+
+# Check application is responding
+curl -I https://www.feed-inc.com/
+```
+
+## important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

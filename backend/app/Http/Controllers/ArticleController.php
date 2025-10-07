@@ -76,8 +76,6 @@ class ArticleController extends Controller
             'content' => ['required', 'string', 'min:10', 'max:100000', new SafeHtmlContent()],
             'excerpt' => ['nullable', 'string', 'max:1000', new SafeHtmlContent()],
             'category' => ['required', new CategoryWhitelist()],
-            'tag' => 'nullable|string|max:100|regex:/^[a-zA-Z0-9\s\/\-_,]+$/',
-            'author' => 'required|string|min:2|max:100|regex:/^[a-zA-Z\s\p{Hiragana}\p{Katakana}\p{Han}]+$/u',
             'featured_image' => ['nullable', new SafeImagePath()],
             'is_published' => 'nullable|boolean',
             'published_at' => 'nullable|date|after_or_equal:today',
@@ -96,8 +94,6 @@ class ArticleController extends Controller
             'content' => $this->sanitizeContent($request->content),
             'excerpt' => $request->excerpt ? strip_tags(trim($request->excerpt)) : null,
             'category' => trim($request->category),
-            'tag' => $request->tag ? trim($request->tag) : 'promo/insights',
-            'author' => trim($request->author),
             'featured_image' => $request->featured_image ? trim($request->featured_image) : null,
             'is_published' => $request->is_published ?? true,
             'published_at' => $request->published_at ?? now(),
@@ -135,30 +131,35 @@ class ArticleController extends Controller
     {
         $article = Article::findOrFail($id);
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string|max:100000',
-            'excerpt' => 'nullable|string|max:1000',
-            'category' => 'required|string|max:255',
-            'tag' => 'nullable|string|max:255',
-            'author' => 'required|string|max:255',
-            'featured_image' => 'nullable|string|max:255',
-            'is_published' => 'boolean',
-            'published_at' => 'nullable|date',
+        $validator = Validator::make($request->all(), [
+            'title' => ['required', 'string', 'min:3', 'max:255', new SafeHtmlContent()],
+            'content' => ['required', 'string', 'min:10', 'max:100000', new SafeHtmlContent()],
+            'excerpt' => ['nullable', 'string', 'max:1000', new SafeHtmlContent()],
+            'category' => ['required', new CategoryWhitelist()],
+            'featured_image' => ['nullable', new SafeImagePath()],
+            'is_published' => 'nullable|boolean',
+            'published_at' => 'nullable|date|after_or_equal:today',
         ]);
 
-        $article->update([
-            'title' => $request->title,
-            'slug' => $request->title !== $article->title ? Str::slug($request->title.'-'.time()) : $article->slug,
-            'content' => $request->content,
-            'excerpt' => $request->excerpt,
-            'category' => $request->category,
-            'tag' => $request->tag ?? 'promo/insights',
-            'author' => $request->author,
-            'featured_image' => $request->featured_image,
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Additional content sanitization
+        $sanitizedData = [
+            'title' => strip_tags(trim($request->title)),
+            'content' => $this->sanitizeContent($request->content),
+            'excerpt' => $request->excerpt ? strip_tags(trim($request->excerpt)) : null,
+            'category' => trim($request->category),
+            'featured_image' => $request->featured_image ? trim($request->featured_image) : null,
             'is_published' => $request->is_published ?? true,
             'published_at' => $request->published_at ?? $article->published_at,
-        ]);
+        ];
+
+        $article->update($sanitizedData);
 
         return response()->json($article);
     }
@@ -251,6 +252,7 @@ class ArticleController extends Controller
     {
         $categories = Article::selectRaw('category, count(*) as count')
             ->published()
+            ->where('category', '!=', 'すべて')
             ->groupBy('category')
             ->get();
 

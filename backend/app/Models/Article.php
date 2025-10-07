@@ -16,8 +16,6 @@ class Article extends Model
         'content',
         'excerpt',
         'category',
-        'tag',
-        'author',
         'featured_image',
         'is_published',
         'published_at',

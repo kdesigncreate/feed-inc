@@ -18,8 +18,6 @@ return new class extends Migration
             $table->text('content');
             $table->text('excerpt')->nullable();
             $table->string('category');
-            $table->string('tag')->default('promo/insights');
-            $table->string('author');
             $table->string('featured_image')->nullable();
             $table->boolean('is_published')->default(true);
             $table->timestamp('published_at')->nullable();
