@@ -12,6 +12,7 @@ import { Modal } from '@/components/Modal';
 interface CaseItem {
   id: string;
   image: string;
+  modalImage?: string;
   tag: string;
   studyName: string;
   clientName: string;
@@ -36,7 +37,7 @@ const filters = [
 ];
 
 const CaseModalContent: React.FC<CaseModalContentProps> = ({ caseData }) => {
-    const modalImageSrc = caseData.image.replace(/(\.[a-zA-Z0-9]+)$/,'_modal$1');
+    const modalImageSrc = caseData.modalImage ?? caseData.image;
     return (
       <div className="w-full flex flex-col md:flex-row md:gap-0">
         {/* 左カラム（画像領域） */}
@@ -72,6 +73,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal01',
       image: '/image/cases/case_hnsk_01.png',
+      modalImage: '/image/cases/case_hnsk_01_modal.png',
       tag: '店頭販促',
       studyName: 'ベースメイクブランドの店頭プロモーション什器',
       clientName: '常盤薬品工業株式会社様',
@@ -82,6 +84,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal02',
       image: '/image/cases/case_evnt_01.png',
+      modalImage: '/image/cases/case_evnt_01_modal.png',
       tag: 'イベント',
       studyName: '国際ホテル＆レストランショー 出展ブース',
       clientName: 'エステー株式会社／エステーPRO株式会社',
@@ -172,6 +175,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal11',
       image: '/image/cases/case_hnsk_02.png',
+      modalImage: '/image/cases/case_hnsk_02_modal.png',
       tag: '店頭販促',
       studyName: '消臭芳香剤のビジュアル開発・販促ツール',
       clientName: 'エステー株式会社',
