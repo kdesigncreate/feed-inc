@@ -5,6 +5,10 @@ import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 
+// Swiper styles
+import 'swiper/css';
+import 'swiper/css/autoplay';
+
 const cases = [
   '/image/top/top_slider_Cases1.jpeg',
   '/image/top/top_slider_Cases2.jpeg',
@@ -24,26 +28,30 @@ export const CasesSlider: React.FC = () => {
         slidesPerGroup={1}
         loop={true}
         autoplay={{
-          delay: 2000,
+          delay: 3000,
           disableOnInteraction: false,
         }}
         modules={[Autoplay]}
         breakpoints={{
-          0: { slidesPerView: 1 }, // モバイル
-          768: { slidesPerView: 2 }, // タブレット
-          1024: { slidesPerView: 3 }  // デスクトップ
+          0: { slidesPerView: 1, spaceBetween: 10 }, // モバイル
+          768: { slidesPerView: 2, spaceBetween: 15 }, // タブレット
+          1024: { slidesPerView: 3, spaceBetween: 20 }  // デスクトップ
         }}
+        className="cases-slider"
       >
         {cases.map((caseSrc, index) => (
           <SwiperSlide key={index}>
-            <a href="/image/FEED_Cases.pdf" target="_blank">
-              <Image
-                src={caseSrc}
-                alt="事例"
-                width={300}
-                height={200}
-                className="w-full hover:scale-105 transition-transform duration-300"
-              />
+            <a href="/image/FEED_Cases.pdf" target="_blank" rel="noopener noreferrer">
+              <div className="relative overflow-hidden rounded-lg shadow-lg">
+                <Image
+                  src={caseSrc}
+                  alt={`事例 ${index + 1}`}
+                  width={400}
+                  height={300}
+                  className="w-full h-auto hover:scale-105 transition-transform duration-300"
+                  style={{ aspectRatio: '4/3' }}
+                />
+              </div>
             </a>
           </SwiperSlide>
         ))}
