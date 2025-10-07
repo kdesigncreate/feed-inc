@@ -36,13 +36,14 @@ const filters = [
 ];
 
 const CaseModalContent: React.FC<CaseModalContentProps> = ({ caseData }) => {
+    const modalImageSrc = caseData.image.replace(/(\.[a-zA-Z0-9]+)$/,'_modal$1');
     return (
       <div className="w-full flex flex-col md:flex-row md:gap-0">
         {/* 左カラム（画像領域） */}
         <div className="w-full md:w-1/2 flex items-center justify-center bg-gradient-to-tr from-gray-400 to-gray-200 md:rounded-none min-h-[260px] sm:min-h-[320px] p-4">
           <div className="relative w-full aspect-[4/3] bg-transparent">
             <Image
-              src={caseData.image}
+              src={modalImageSrc}
               alt={caseData.studyName}
               fill
               className="object-contain"
@@ -70,7 +71,7 @@ const CaseModalContent: React.FC<CaseModalContentProps> = ({ caseData }) => {
 const cases: CaseItem[] = [
     {
       id: 'modal01',
-      image: '/image/cases/case_hnsk_01_co.png',
+      image: '/image/cases/case_hnsk_01.png',
       tag: '店頭販促',
       studyName: 'ベースメイクブランドの店頭プロモーション什器',
       clientName: '常盤薬品工業株式会社様',
@@ -80,7 +81,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal02',
-      image: '/image/cases/case_evnt_01_sq.png',
+      image: '/image/cases/case_evnt_01.png',
       tag: 'イベント',
       studyName: '国際ホテル＆レストランショー 出展ブース',
       clientName: 'エステー株式会社／エステーPRO株式会社',
@@ -90,7 +91,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal03',
-      image: '/image/cases/case_cmpn_01_co.png',
+      image: '/image/cases/case_cmpn_01.png',
       tag: 'キャンペーン',
       studyName: '中華まんのキャンペーン',
       clientName: '井村屋株式会社',
@@ -100,7 +101,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal04',
-      image: '/image/cases/case_cmpn_02_co.png',
+      image: '/image/cases/case_cmpn_02.png',
       tag: 'キャンペーン',
       studyName: '梅酒フェア チェーンカスタマイズキャンペーン',
       clientName: 'チョーヤ梅酒株式会社',
@@ -110,7 +111,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal05',
-      image: '/image/cases/case_dgpr_01_co.png',
+      image: '/image/cases/case_dgpr_01.png',
       tag: 'デジタルプロモーション',
       studyName: '敏感肌用エイジングケアシリーズSNSクチコミ施策',
       clientName: '常盤薬品工業株式会社',
@@ -120,7 +121,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal06',
-      image: '/image/cases/case_dgpr_02_sq.png',
+      image: '/image/cases/case_dgpr_02.png',
       tag: 'デジタルプロモーション',
       studyName: '消臭芳香剤のSNS認知拡大施策',
       clientName: 'エステー株式会社',
@@ -130,7 +131,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal07',
-      image: '/image/cases/case_dsgn_01_co.png',
+      image: '/image/cases/case_dsgn_01.png',
       tag: 'デザイン',
       studyName: '飲料製品のパッケージ デザイン',
       clientName: '株式会社エルビー',
@@ -140,7 +141,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal08',
-      image: '/image/cases/case_dsgn_02_co.png',
+      image: '/image/cases/case_dsgn_02.png',
       tag: 'デザイン',
       studyName: '高難易度ジグソーパズルの企画・デザイン',
       clientName: '株式会社ハナヤマ',
@@ -150,7 +151,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal09',
-      image: '/image/cases/case_eigy_01_co.png',
+      image: '/image/cases/case_eigy_01.png',
       tag: '営業ツール',
       studyName: 'ユニットバス新機能訴求ツール',
       clientName: '株式会社LIXIL',
@@ -160,7 +161,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal10',
-      image: '/image/cases/case_evnt_02_sq.png',
+      image: '/image/cases/case_evnt_02.png',
       tag: 'イベント',
       studyName: 'スキンケアブランドの周年イベント',
       clientName: '常盤薬品工業株式会社',
@@ -170,7 +171,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal11',
-      image: '/image/cases/case_hnsk_02_sq.png',
+      image: '/image/cases/case_hnsk_02.png',
       tag: '店頭販促',
       studyName: '消臭芳香剤のビジュアル開発・販促ツール',
       clientName: 'エステー株式会社',
@@ -180,7 +181,7 @@ const cases: CaseItem[] = [
     },
     {
       id: 'modal12',
-      image: '/image/cases/case_nvlty_01_sq.png',
+      image: '/image/cases/case_nvlty_01.png',
       tag: 'ノベルティ',
       studyName: 'コンタクトレンズケアのベタ付けノベルティ各種',
       clientName: 'ボシュロム・ジャパン株式会社',
