@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- 背景円 -->
+  <circle cx="100" cy="100" r="100" fill="#e0e0e0"/>
+  
+  <!-- 頭 -->
+  <circle cx="100" cy="85" r="40" fill="#a0a0a0"/>
+  
+  <!-- 体 -->
+  <path d="M100,125 Q60,125 50,180 L150,180 Q140,125 100,125" fill="#a0a0a0"/>
+</svg>
