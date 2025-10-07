@@ -39,8 +39,8 @@ export const Card: React.FC<CardProps> = ({
         />
       </div>
     )}
-    <div className="px-4 py-3 bg-blue-900 text-white">
-      <span className="text-sm font-medium">promo/insights</span>
+    <div className="px-4 py-3 bg-gray-800 text-white">
+      <span className="text-sm font-medium">Knowledge</span>
     </div>
     <div className="px-4 py-6 flex-1 flex flex-col">
       <h3 className="text-lg font-bold leading-relaxed mb-4 flex-1">
