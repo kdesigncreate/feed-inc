@@ -1,32 +1,27 @@
-# Step 1: Build stage
+# Stage 1: ビルド用のステージ
 FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Install dependencies
+# 依存パッケージをインストール
 COPY package*.json ./
 RUN npm install
 
-# Copy source and build
+# ソースコードをコピーしてビルド
 COPY . .
 RUN npm run build
 
-# Step 2: Runtime stage
+# Stage 2: 本番用のステージ
 FROM node:18-alpine
 WORKDIR /app
 
-# Set environment
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
-
-# Copy only necessary artifacts
+# ビルダーからビルド済みのファイルのみをコピー
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-EXPOSE 3000
+# 環境変数を設定
+ENV NODE_ENV=production
 
-# Start Next.js in production mode
+# アプリケーションを起動
 CMD ["npm", "start"]
