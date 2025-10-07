@@ -41,13 +41,13 @@ const CaseModalContent: React.FC<CaseModalContentProps> = ({ caseData }) => {
     return (
       <div className="w-full flex flex-col md:flex-row md:gap-0">
         {/* 左カラム（画像領域） */}
-        <div className="w-full md:w-1/2 flex items-center justify-center bg-gradient-to-tr from-gray-400 to-gray-200 md:rounded-none min-h-[260px] sm:min-h-[320px] p-4">
-          <div className="relative w-full aspect-[4/3] bg-transparent">
+        <div className="w-full md:w-1/2 relative overflow-hidden md:rounded-none min-h-[260px] sm:min-h-[320px]">
+          <div className="relative w-full aspect-[4/3]">
             <Image
               src={modalImageSrc}
               alt={caseData.studyName}
               fill
-              className="object-contain"
+              className="object-cover"
               sizes="(min-width: 768px) 50vw, 100vw"
             />
           </div>
