@@ -110,7 +110,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, maxWidth =
           </div>
         )}
         {/* 本文 */}
-        <div className="w-full p-0 flex flex-col h-auto">
+        <div className="w-full p-0 flex flex-row h-full">
           {children}
         </div>
       </div>
