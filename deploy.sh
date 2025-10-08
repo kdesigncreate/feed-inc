@@ -7,7 +7,7 @@ set -e  # エラーが発生したら停止
 
 SSH_KEY="/home/kenta/.ssh/feed-sshkey.pem"
 SERVER="root@162.43.87.222"
-REMOTE_PATH="/var/www/feed-inc"
+REMOTE_PATH="/var/www/html/feed-inc"
 
 echo "🚀 Feed Inc. デプロイを開始します..."
 
