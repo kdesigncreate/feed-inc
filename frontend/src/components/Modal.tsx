@@ -87,7 +87,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, maxWidth =
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-y-auto overscroll-contain">
       <div className="p-2 sm:p-6 flex min-h-full items-center justify-center">
       <div
-        className={`w-full md:w-[70vw] ${maxWidthClass} min-w-[450px] my-0 p-0 relative bg-white overflow-hidden rounded-[16px] md:rounded-[24px] shadow-2xl animate-fade-in max-w-none`}
+        className={`w-full md:w-3/4 ${maxWidthClass} min-w-[450px] my-0 md:my-[12em] p-0 relative bg-white overflow-hidden rounded-[20px] shadow-2xl animate-fade-in max-w-none flex flex-row`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title && titleId ? titleId : undefined}
