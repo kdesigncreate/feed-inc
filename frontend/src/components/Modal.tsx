@@ -39,9 +39,11 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, maxWidth =
     }
   })();
   
-  // モーダル表示中は背面のスクロールをロックし、開く前のスクロール位置を維持
+  // モーダル表示中は背面のスクロールをロックし、開く前のスクロール位置を維持（PC時のみ）
   useEffect(() => {
     if (!isOpen) return;
+    const isDesktop = typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches;
+    if (!isDesktop) return;
     const { style } = document.body;
     const previous = {
       overflow: style.overflow,
