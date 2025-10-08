@@ -26,15 +26,19 @@ if [ -n "$(git status --porcelain)" ]; then
     exit 1
 fi
 
-# 3. ファイルをプロダクションサーバーにアップロード
-echo "📤 ファイルをプロダクションサーバーにアップロード中..."
-rsync -avz -e "ssh -i $SSH_KEY" \
-  --exclude=node_modules \
-  --exclude=vendor \
-  --exclude=.git \
-  --exclude=storage/logs \
-  --exclude=.env \
-  /home/kenta/feed-inc/ $SERVER:$REMOTE_PATH/
+# 3. ファイルをプロダクションサーバーにアップロード（ローカル実行時のみ）
+if [ "$(hostname)" != "x162-43-87-222" ] && [ ! -f "/var/www/html/feed-inc/deploy.sh" ]; then
+    echo "📤 ファイルをプロダクションサーバーにアップロード中..."
+    rsync -avz -e "ssh -i $SSH_KEY" \
+      --exclude=node_modules \
+      --exclude=vendor \
+      --exclude=.git \
+      --exclude=storage/logs \
+      --exclude=.env \
+      /home/kenta/feed-inc/ $SERVER:$REMOTE_PATH/
+else
+    echo "📍 プロダクションサーバーで実行中のため、ファイルアップロードをスキップします"
+fi
 
 # 4. Laravel依存関係とキャッシュの修正
 echo "🔧 Laravel依存関係とキャッシュを修正中..."
