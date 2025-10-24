@@ -41,7 +41,7 @@ const CaseModalContent: React.FC<CaseModalContentProps> = ({ caseData }) => {
     return (
       <div className="w-full flex flex-col md:flex-row md:gap-0">
         {/* 左カラム（画像領域） */}
-        <div className="w-full md:basis-1/2 md:shrink-0 md:grow-0 relative overflow-hidden md:rounded-none min-h-[260px] sm:min-h-[320px] h-full" style={{ background: 'linear-gradient(-20deg, #aaa 0%, #ddd 100%)' }}>
+        <div className="w-full md:basis-1/2 md:shrink-0 md:grow-0 relative overflow-hidden md:rounded-none min-h-[320px] sm:min-h-[400px] md:min-h-[500px] h-full" style={{ background: 'linear-gradient(-20deg, #aaa 0%, #ddd 100%)' }}>
           <div className="absolute inset-0">
             <Image
               src={modalImageSrc}
@@ -53,15 +53,15 @@ const CaseModalContent: React.FC<CaseModalContentProps> = ({ caseData }) => {
           </div>
         </div>
         {/* 右カラム（テキスト領域） */}
-        <div className="w-full md:w-1/2 box-border relative px-6 py-8 sm:px-8 sm:py-10 md:p-12">
-          <h3 className="m-0 pb-2 text-xl font-bold text-gray-900 border-b border-dotted border-gray-400">{caseData.studyName}</h3>
-          <p className="mt-2 mb-4 font-semibold text-gray-800">{caseData.clientName}</p>
-          <p className="text-gray-600 leading-relaxed">{caseData.description}</p>
+        <div className="w-full md:w-1/2 box-border relative px-6 py-8 sm:px-8 sm:py-10 md:px-16 md:py-16">
+          <h3 className="m-0 pb-2 text-xl md:text-2xl font-bold text-gray-900 border-b border-dotted border-gray-400">{caseData.studyName}</h3>
+          <p className="mt-2 mb-4 md:text-lg font-semibold text-gray-800">{caseData.clientName}</p>
+          <p className="text-gray-600 md:text-lg leading-relaxed">{caseData.description}</p>
           <ul className="mt-10 md:mt-16 pl-5 list-[square] relative space-y-3">
             {/* point ラベル */}
-            <span className="absolute -top-8 left-0 font-semibold text-blue-500 text-base">point</span>
+            <span className="absolute -top-8 left-0 font-semibold text-blue-500 text-base md:text-lg">point</span>
             {caseData.points.map((point, index) => (
-              <li key={index} className="text-sm text-gray-700">{point}</li>
+              <li key={index} className="text-sm md:text-base text-gray-700">{point}</li>
             ))}
           </ul>
         </div>
