@@ -95,6 +95,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal03',
       image: '/image/cases/case_cmpn_01.png',
+      modalImage: '/image/cases/case_cmpn_01_modal.png',
       tag: 'キャンペーン',
       studyName: '中華まんのキャンペーン',
       clientName: '井村屋株式会社',
@@ -105,6 +106,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal04',
       image: '/image/cases/case_cmpn_02.png',
+      modalImage: '/image/cases/case_cmpn_02_modal.png',
       tag: 'キャンペーン',
       studyName: '梅酒フェア チェーンカスタマイズキャンペーン',
       clientName: 'チョーヤ梅酒株式会社',
@@ -115,6 +117,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal05',
       image: '/image/cases/case_dgpr_01.png',
+      modalImage: '/image/cases/case_dgpr_01_modal.png',
       tag: 'デジタルプロモーション',
       studyName: '敏感肌用エイジングケアシリーズSNSクチコミ施策',
       clientName: '常盤薬品工業株式会社',
@@ -125,6 +128,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal06',
       image: '/image/cases/case_dgpr_02.png',
+      modalImage: '/image/cases/case_dgpr_02_modal.png',
       tag: 'デジタルプロモーション',
       studyName: '消臭芳香剤のSNS認知拡大施策',
       clientName: 'エステー株式会社',
@@ -135,6 +139,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal07',
       image: '/image/cases/case_dsgn_01.png',
+      modalImage: '/image/cases/case_dsgn_01_modal.png',
       tag: 'デザイン',
       studyName: '飲料製品のパッケージ デザイン',
       clientName: '株式会社エルビー',
@@ -145,6 +150,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal08',
       image: '/image/cases/case_dsgn_02.png',
+      modalImage: '/image/cases/case_dsgn_02_modal.png',
       tag: 'デザイン',
       studyName: '高難易度ジグソーパズルの企画・デザイン',
       clientName: '株式会社ハナヤマ',
@@ -155,6 +161,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal09',
       image: '/image/cases/case_eigy_01.png',
+      modalImage: '/image/cases/case_eigy_01_modal.png',
       tag: '営業ツール',
       studyName: 'ユニットバス新機能訴求ツール',
       clientName: '株式会社LIXIL',
@@ -165,6 +172,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal10',
       image: '/image/cases/case_evnt_02.png',
+      modalImage: '/image/cases/case_evnt_02_modal.png',
       tag: 'イベント',
       studyName: 'スキンケアブランドの周年イベント',
       clientName: '常盤薬品工業株式会社',
@@ -186,6 +194,7 @@ const cases: CaseItem[] = [
     {
       id: 'modal12',
       image: '/image/cases/case_nvlty_01.png',
+      modalImage: '/image/cases/case_nvlty_01_modal.png',
       tag: 'ノベルティ',
       studyName: 'コンタクトレンズケアのベタ付けノベルティ各種',
       clientName: 'ボシュロム・ジャパン株式会社',
