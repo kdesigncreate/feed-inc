@@ -31,7 +31,7 @@ const filters = [
     { key: 'design', label: 'デザイン' },
     { key: 'campaign', label: 'キャンペーン' },
     { key: 'event', label: 'イベント' },
-    { key: 'degitalPromotion', label: 'デジタルプロモーション' },
+    { key: 'digitalPromotion', label: 'デジタルプロモーション' },
     { key: 'salesTool', label: '営業ツール' },
     { key: 'novelty', label: 'ノベルティ' }
 ];
