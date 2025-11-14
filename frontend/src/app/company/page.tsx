@@ -169,7 +169,7 @@ export default function Company() {
                     
                     <div className="text-left mt-12">
                         <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col items-center border border-gray-100">
-                            <p className="text-xl font-bold text-gray-800 mb-6 text-center">〈主要お取引様〉</p>
+                            <p className="text-xl font-bold text-gray-800 mb-6 text-center">〈主要お取引先様〉</p>
                             <div className="w-full flex justify-center items-center">
                                 <Image
                                     src="/image/company/client_logo_2409.jpg"
