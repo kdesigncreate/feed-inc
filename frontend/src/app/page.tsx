@@ -39,23 +39,9 @@ const workflows = [
 ];
 
 export default function Home() {
-  const [hoveredWorkflow, setHoveredWorkflow] = useState<number | null>(null);
-  const [activeWorkflow, setActiveWorkflow] = useState<number>(0);
   const [articles, setArticles] = useState<Article[]>([]);
   const [articlesLoading, setArticlesLoading] = useState(true);
   const [articlesError, setArticlesError] = useState<string | null>(null);
-  const [isPC, setIsPC] = useState<boolean>(false); // Default to mobile for SSR consistency
-  const [clickedWorkflow, setClickedWorkflow] = useState<number | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  // PC/スマホ判定 - client-side only to avoid hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-    const checkIsPC = () => setIsPC(window.innerWidth >= 768);
-    checkIsPC();
-    window.addEventListener('resize', checkIsPC);
-    return () => window.removeEventListener('resize', checkIsPC);
-  }, []);
 
   // Fetch latest articles
   useEffect(() => {
@@ -87,23 +73,7 @@ export default function Home() {
     }).replace(/\//g, '.');
   };
 
-  // Handle scroll-based workflow change for mobile
-  useEffect(() => {
-    const handleScroll = () => {
-      const workflowSection = document.getElementById('workflow-section');
-      if (workflowSection) {
-        const rect = workflowSection.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        const sectionHeight = rect.height;
-        const scrollProgress = Math.max(0, Math.min(1, (windowHeight - rect.top) / (windowHeight + sectionHeight)));
-        const newIndex = Math.floor(scrollProgress * workflows.length);
-        setActiveWorkflow(Math.min(newIndex, workflows.length - 1));
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // ワークフローは静的表示のみ（JS挙動なし）
 
   return (
     <div className="font-main">
@@ -315,26 +285,21 @@ export default function Home() {
             {workflows.map((workflow, index) => (
               <div 
                 key={index} 
-                className="relative w-full group cursor-pointer"
-                onClick={() => mounted && isPC ? setClickedWorkflow(clickedWorkflow === index ? null : index) : undefined}
+                className="relative w-full"
               >
                 <Image
                   src={workflow.image}
                   alt=""
                   width={250}
                   height={300}
-                  className="w-full block transition-all duration-300 transform-gpu group-hover:rotate-3 origin-bottom"
+                  className="w-full block"
                 />
                 <Image
-                  src={
-                    // Always show default text for SSR consistency, change only after mount and on PC
-                    mounted && isPC && clickedWorkflow === index ? workflow.textAfter : workflow.text
-                  }
+                  src={workflow.textAfter}
                   alt=""
                   width={250}
                   height={80}
-                  className="absolute top-2 left-0 md:-left-4 w-full flex justify-center items-center transition-all duration-300 transform-gpu group-hover:-rotate-3 origin-bottom"
-                  suppressHydrationWarning
+                  className="absolute top-2 left-0 md:-left-4 w-full flex justify-center items-center"
                 />
               </div>
             ))}
