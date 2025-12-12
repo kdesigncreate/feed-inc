@@ -24,8 +24,8 @@ const services = [
       '・　メニューレシピ開発やリーフレット作成'
     ],
     buttonText: '事例を見る',
-    buttonHref: '/image/FEED_Cases.pdf',
-    isExternal: true
+    buttonHref: '/cases',
+    isExternal: false
   },
   {
     id: 'design',
@@ -41,8 +41,8 @@ const services = [
       '・　コーナー演出、空間演出'
     ],
     buttonText: '事例を見る',
-    buttonHref: '/image/FEED_Cases.pdf',
-    isExternal: true
+    buttonHref: '/cases',
+    isExternal: false
   },
   {
     id: 'campaign',
@@ -58,8 +58,8 @@ const services = [
       '・　インフルエンサー活用キャンペーン'
     ],
     buttonText: '事例を見る',
-    buttonHref: '/image/FEED_Cases.pdf',
-    isExternal: true
+    buttonHref: '/cases',
+    isExternal: false
   },
   {
     id: 'event',
@@ -75,8 +75,8 @@ const services = [
       '・　オンラインイベント'
     ],
     buttonText: '事例を見る',
-    buttonHref: '/image/FEED_Cases.pdf',
-    isExternal: true
+    buttonHref: '/cases',
+    isExternal: false
   },
   {
     id: 'digitalpromotion',
@@ -92,8 +92,8 @@ const services = [
       '・　購買データを活用した広告展開～効果分析'
     ],
     buttonText: '事例を見る',
-    buttonHref: '/image/FEED_Cases.pdf',
-    isExternal: true
+    buttonHref: '/cases',
+    isExternal: false
   },
   {
     id: 'salestools',
@@ -109,8 +109,8 @@ const services = [
       '・　特定の顧客向け対策としての特別営業キット'
     ],
     buttonText: '事例を見る',
-    buttonHref: '/image/FEED_Cases.pdf',
-    isExternal: true
+    buttonHref: '/cases',
+    isExternal: false
   },
   {
     id: 'novelty',
@@ -126,8 +126,8 @@ const services = [
       '・　サステナブルなノベルティ'
     ],
     buttonText: '事例を見る',
-    buttonHref: '/image/FEED_Cases.pdf',
-    isExternal: true
+    buttonHref: '/cases',
+    isExternal: false
   }
 ];
 

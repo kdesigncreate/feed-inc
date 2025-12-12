@@ -288,7 +288,7 @@ export default function Home() {
         <CasesSlider />
         
         <div className="flex justify-center items-center">
-          <Button href="/image/FEED_Cases.pdf" target="_blank">
+          <Button href="/cases">
             ViewMore
           </Button>
         </div>

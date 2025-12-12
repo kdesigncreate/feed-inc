@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 
@@ -45,7 +46,7 @@ export const CasesSlider: React.FC = () => {
       >
         {cases.map((caseSrc, index) => (
           <SwiperSlide key={index}>
-            <a href="/image/FEED_Cases.pdf" target="_blank" rel="noopener noreferrer">
+            <Link href="/cases">
               <div className="relative overflow-hidden rounded-lg shadow-lg">
                 <Image
                   src={caseSrc}
@@ -56,7 +57,7 @@ export const CasesSlider: React.FC = () => {
                   style={{ aspectRatio: '4/3' }}
                 />
               </div>
-            </a>
+            </Link>
           </SwiperSlide>
         ))}
       </Swiper>

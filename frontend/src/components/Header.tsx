@@ -119,7 +119,7 @@ export const Header: React.FC = () => {
                         <Link href="/services" onClick={closeMenu} className="text-xl text-white">Services</Link>
                     </li>
                     <li>
-                        <a href="/image/FEED_Cases.pdf" target="_blank" onClick={closeMenu} className="text-xl text-white">Cases</a>
+                        <Link href="/cases" onClick={closeMenu} className="text-xl text-white">Cases</Link>
                     </li>
                     <li>
                         <Link href="/knowledge" onClick={closeMenu} className="text-xl text-white">Knowledge</Link>
