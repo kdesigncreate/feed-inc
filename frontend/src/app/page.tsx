@@ -17,23 +17,15 @@ import { Button } from '../components/Button';
 
 const workflows = [
   {
-    image: '/image/top/top_WF_01_image.png',
-    text: '/image/top/top_WF_01_text.png',
     textAfter: '/image/top/top_WF_01_text_after.png'
   },
   {
-    image: '/image/top/top_WF_02_image.png',
-    text: '/image/top/top_WF_02_text.png',
     textAfter: '/image/top/top_WF_02_text_after.png'
   },
   {
-    image: '/image/top/top_WF_03_image.png',
-    text: '/image/top/top_WF_03_text.png',
     textAfter: '/image/top/top_WF_03_text_after.png'
   },
   {
-    image: '/image/top/top_WF_04_image.png',
-    text: '/image/top/top_WF_04_text.png',
     textAfter: '/image/top/top_WF_04_text_after.png'
   }
 ];
@@ -285,21 +277,14 @@ export default function Home() {
             {workflows.map((workflow, index) => (
               <div 
                 key={index} 
-                className="relative w-full"
+                className="w-full"
               >
-                <Image
-                  src={workflow.image}
-                  alt=""
-                  width={250}
-                  height={300}
-                  className="w-full block"
-                />
                 <Image
                   src={workflow.textAfter}
                   alt=""
                   width={250}
                   height={80}
-                  className="absolute top-2 left-0 md:-left-4 w-full flex justify-center items-center"
+                  className="w-full block"
                 />
               </div>
             ))}
