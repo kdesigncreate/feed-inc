@@ -6,12 +6,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Stateful Domains
+    | ステートフルなドメイン
     |--------------------------------------------------------------------------
     |
-    | Requests from the following domains / hosts will receive stateful API
-    | authentication cookies. Typically, these should include your local
-    | and production domains which access your API via a frontend SPA.
+    | 次のドメイン／ホストからのリクエストには、ステートフルな API 認証
+    | クッキーが付与されます。一般的に、フロントエンド SPA 経由で API に
+    | アクセスするローカルおよび本番のドメインを含めます。
     |
     */
 
@@ -21,13 +21,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Sanctum Guards
+    | Sanctum ガード
     |--------------------------------------------------------------------------
     |
-    | This array contains the authentication guards that will be checked when
-    | Sanctum is trying to authenticate a request. If none of these guards
-    | are able to authenticate the request, Sanctum will use the bearer
-    | token that's present on an incoming request for authentication.
+    | この配列は、Sanctum がリクエスト認証を試みる際に確認する認証ガードを
+    | 含みます。どのガードでも認証できない場合、Sanctum はリクエストに
+    | 含まれるベアラートークンを用いて認証します。
     |
     */
 
@@ -35,12 +34,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Expiration Minutes
+    | 期限（分）
     |--------------------------------------------------------------------------
     |
-    | This value controls the number of minutes until an issued token will be
-    | considered expired. This will override any values set in the token's
-    | "expires_at" attribute, but first-party sessions are not affected.
+    | 発行されたトークンが失効とみなされるまでの分数を指定します。
+    | トークンの "expires_at" の値を上書きしますが、ファーストパーティの
+    | セッションには影響しません。
     |
     */
 
@@ -48,14 +47,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Token Prefix
+    | トークンの接頭辞
     |--------------------------------------------------------------------------
     |
-    | Sanctum can prefix new tokens in order to take advantage of numerous
-    | security scanning initiatives maintained by open source platforms
-    | that notify developers if they commit tokens into repositories.
+    | Sanctum は新規トークンに接頭辞を付けることができ、オープンソース
+    | プラットフォームが提供する各種セキュリティスキャンの恩恵を受けられます。
+    | これにより、誤ってリポジトリにトークンをコミットした場合に通知されます。
     |
-    | See: https://docs.github.com/en/code-security/secret-scanning/about-secret-scanning
+    | 参考: https://docs.github.com/en/code-security/secret-scanning/about-secret-scanning
     |
     */
 
@@ -63,12 +62,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Sanctum Middleware
+    | Sanctum のミドルウェア
     |--------------------------------------------------------------------------
     |
-    | When authenticating your first-party SPA with Sanctum you may need to
-    | customize some of the middleware Sanctum uses while processing the
-    | request. You may change the middleware listed below as required.
+    | ファーストパーティ SPA を Sanctum で認証する際、リクエスト処理に使用する
+    | ミドルウェアをカスタマイズする必要がある場合があります。必要に応じて
+    | 以下のミドルウェアを変更してください。
     |
     */
 

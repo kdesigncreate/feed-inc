@@ -1,6 +1,11 @@
+# EditorConfig 設定ファイル
+# 各エディタで共通のフォーマット・インデント・改行ルールを統一します。
+
 root = true
 
+[# すべてのファイルに適用される既定ルール]
 [*]
+# 文字コード/改行/インデント/末尾改行/末尾空白のトリムを定義
 charset = utf-8
 end_of_line = lf
 indent_size = 4
@@ -8,11 +13,14 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+[# Markdown は末尾空白を保持（改行等の表現に使うため）]
 [*.md]
 trim_trailing_whitespace = false
 
+[# YAML は 2 スペースインデント]
 [*.{yml,yaml}]
 indent_size = 2
 
+[# docker-compose は 4 スペースインデント]
 [docker-compose.yml]
 indent_size = 4

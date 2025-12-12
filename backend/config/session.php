@@ -6,15 +6,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Session Driver
+    | デフォルトのセッションドライバ
     |--------------------------------------------------------------------------
     |
-    | This option determines the default session driver that is utilized for
-    | incoming requests. Laravel supports a variety of storage options to
-    | persist session data. Database storage is a great default choice.
+    | このオプションは受信リクエストで利用されるデフォルトのセッション
+    | ドライバを決定します。Laravel はセッションデータの保存に多様な
+    | ストレージオプションをサポートしています。データベース保存は
+    | 優れた既定の選択肢です。
     |
-    | Supported: "file", "cookie", "database", "memcached",
-    |            "redis", "dynamodb", "array"
+    | 対応ドライバ: "file", "cookie", "database", "memcached",
+    |               "redis", "dynamodb", "array"
     |
     */
 
@@ -22,13 +23,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Lifetime
+    | セッションの有効期間
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the number of minutes that you wish the session
-    | to be allowed to remain idle before it expires. If you want them
-    | to expire immediately when the browser is closed then you may
-    | indicate that via the expire_on_close configuration option.
+    | セッションが失効するまでのアイドル時間（分）を指定します。ブラウザを
+    | 閉じたタイミングで即時失効させたい場合は、expire_on_close オプションを
+    | 有効にしてください。
     |
     */
 
@@ -38,12 +38,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Encryption
+    | セッションの暗号化
     |--------------------------------------------------------------------------
     |
-    | This option allows you to easily specify that all of your session data
-    | should be encrypted before it's stored. All encryption is performed
-    | automatically by Laravel and you may use the session like normal.
+    | このオプションにより、保存前にすべてのセッションデータを暗号化できます。
+    | 暗号化は Laravel により自動的に行われ、通常どおりセッションを扱えます。
     |
     */
 
@@ -51,12 +50,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session File Location
+    | セッションファイルの保存場所
     |--------------------------------------------------------------------------
     |
-    | When utilizing the "file" session driver, the session files are placed
-    | on disk. The default storage location is defined here; however, you
-    | are free to provide another location where they should be stored.
+    | 「file」セッションドライバを利用する場合、セッションファイルは
+    | ディスク上に保存されます。既定の保存場所はここで定義しますが、
+    | 別の保存先を指定しても構いません。
     |
     */
 
@@ -64,12 +63,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Database Connection
+    | セッションのデータベース接続
     |--------------------------------------------------------------------------
     |
-    | When using the "database" or "redis" session drivers, you may specify a
-    | connection that should be used to manage these sessions. This should
-    | correspond to a connection in your database configuration options.
+    | 「database」または「redis」セッションドライバを使用する場合、セッションの
+    | 管理に使用する接続を指定できます。データベース設定に定義された接続に
+    | 対応させてください。
     |
     */
 
@@ -77,12 +76,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Database Table
+    | セッションのテーブル
     |--------------------------------------------------------------------------
     |
-    | When using the "database" session driver, you may specify the table to
-    | be used to store sessions. Of course, a sensible default is defined
-    | for you; however, you're welcome to change this to another table.
+    | 「database」セッションドライバを使用する場合、セッション保存に使用する
+    | テーブルを指定できます。妥当な既定値が定義されていますが、任意の
+    | テーブルに変更できます。
     |
     */
 
@@ -90,14 +89,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cache Store
+    | セッションのキャッシュストア
     |--------------------------------------------------------------------------
     |
-    | When using one of the framework's cache driven session backends, you may
-    | define the cache store which should be used to store the session data
-    | between requests. This must match one of your defined cache stores.
+    | フレームワークのキャッシュ駆動のセッションバックエンドを使用する場合、
+    | リクエスト間でセッションデータを保存するキャッシュストアを指定します。
+    | これは定義済みのキャッシュストアのいずれかと一致している必要があります。
     |
-    | Affects: "dynamodb", "memcached", "redis"
+    | 対象: "dynamodb", "memcached", "redis"
     |
     */
 
@@ -105,12 +104,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Sweeping Lottery
+    | セッション掃除のロッタリー（抽選確率）
     |--------------------------------------------------------------------------
     |
-    | Some session drivers must manually sweep their storage location to get
-    | rid of old sessions from storage. Here are the chances that it will
-    | happen on a given request. By default, the odds are 2 out of 100.
+    | 一部のセッションドライバでは、古いセッションを削除するために
+    | ストレージの掃除が必要です。ここでは、1 リクエストあたりの実行確率を
+    | 指定します。既定では 2/100 です。
     |
     */
 
@@ -118,12 +117,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Name
+    | セッションクッキー名
     |--------------------------------------------------------------------------
     |
-    | Here you may change the name of the session cookie that is created by
-    | the framework. Typically, you should not need to change this value
-    | since doing so does not grant a meaningful security improvement.
+    | フレームワークが作成するセッションクッキーの名前を変更できます。
+    | 変更しても実質的なセキュリティ向上は見込めないため、通常は
+    | 変更の必要はありません。
     |
     */
 
@@ -134,12 +133,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Path
+    | セッションクッキーの Path
     |--------------------------------------------------------------------------
     |
-    | The session cookie path determines the path for which the cookie will
-    | be regarded as available. Typically, this will be the root path of
-    | your application, but you're free to change this when necessary.
+    | セッションクッキーの Path は、クッキーが有効とみなされるパスを
+    | 決定します。通常はアプリケーションのルートパスですが、必要に応じて
+    | 変更できます。
     |
     */
 
@@ -147,12 +146,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Domain
+    | セッションクッキーのドメイン
     |--------------------------------------------------------------------------
     |
-    | This value determines the domain and subdomains the session cookie is
-    | available to. By default, the cookie will be available to the root
-    | domain and all subdomains. Typically, this shouldn't be changed.
+    | セッションクッキーが有効なドメインとサブドメインを決定します。
+    | 既定では、ルートドメインとすべてのサブドメインで有効です。
+    | 通常、この値を変更する必要はありません。
     |
     */
 
@@ -160,12 +159,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | HTTPS Only Cookies
+    | HTTPS のみクッキー
     |--------------------------------------------------------------------------
     |
-    | By setting this option to true, session cookies will only be sent back
-    | to the server if the browser has a HTTPS connection. This will keep
-    | the cookie from being sent to you when it can't be done securely.
+    | このオプションを true にすると、ブラウザが HTTPS 接続の場合のみ
+    | セッションクッキーをサーバへ送信します。安全でない場合に
+    | クッキーが送信されることを防ぎます。
     |
     */
 
@@ -173,12 +172,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | HTTP Access Only
+    | HTTP のみアクセス
     |--------------------------------------------------------------------------
     |
-    | Setting this value to true will prevent JavaScript from accessing the
-    | value of the cookie and the cookie will only be accessible through
-    | the HTTP protocol. It's unlikely you should disable this option.
+    | この値を true にすると、JavaScript からクッキー値へのアクセスを禁止し、
+    | HTTP プロトコル経由でのみアクセス可能になります。このオプションを
+    | 無効にするべき場面はほとんどありません。
     |
     */
 
@@ -186,16 +185,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Same-Site Cookies
+    | SameSite クッキー
     |--------------------------------------------------------------------------
     |
-    | This option determines how your cookies behave when cross-site requests
-    | take place, and can be used to mitigate CSRF attacks. By default, we
-    | will set this value to "lax" to permit secure cross-site requests.
+    | クロスサイトリクエスト時のクッキーの挙動を決定し、CSRF 攻撃の緩和に
+    | 利用できます。既定では、セキュアなクロスサイトリクエストを許可するため
+    | 「lax」に設定します。
     |
-    | See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
+    | 参考: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
     |
-    | Supported: "lax", "strict", "none", null
+    | 対応値: "lax", "strict", "none", null
     |
     */
 
@@ -203,12 +202,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Partitioned Cookies
+    | 分割（Partitioned）クッキー
     |--------------------------------------------------------------------------
     |
-    | Setting this value to true will tie the cookie to the top-level site for
-    | a cross-site context. Partitioned cookies are accepted by the browser
-    | when flagged "secure" and the Same-Site attribute is set to "none".
+    | この値を true にすると、クロスサイト環境でクッキーがトップレベルサイトに
+    | 結び付けられます。Partitioned クッキーは "secure" フラグが立ち、
+    | SameSite 属性が "none" のときブラウザに受け入れられます。
     |
     */
 

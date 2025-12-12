@@ -20,6 +20,10 @@ const cases = [
 ];
 
 export const CasesSlider: React.FC = () => {
+  //CasesSliderはCasesSliderのコンポーネント。
+  //React.FCはReactの関数コンポーネントにするためのもの。
+  //引数はない。
+  //戻り値はReact.ReactNode型。
   return (
     <div className="w-full relative px-8 md:px-24 lg:px-32 mb-12">
       <Swiper

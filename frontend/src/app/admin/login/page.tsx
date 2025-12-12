@@ -9,88 +9,134 @@ import { InputValidator } from '@/lib/validation';
 import Image from 'next/image';
 
 export default function AdminLoginPage() {
+  //AdminLoginPageは管理画面のログインページのコンポーネント。
   const [credentials, setCredentials] = useState({
+    //credentialsは認証情報を表す。
     email: '',
     password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  //isLoadingはローディング中かどうかを表す。
   const [error, setError] = useState<string | null>(null);
+  //errorはエラーを表す。
   const [fieldErrors, setFieldErrors] = useState<{
+    //fieldErrorsはフィールドエラーを表す。
     email: string[];
     password: string[];
-  }>({
+  }>({ 
     email: [],
     password: [],
   });
   const [loginAttempts, setLoginAttempts] = useState(0);
+  //loginAttemptsはログイン試行回数を表す。
   
   const { login } = useAuth();
+  //useAuthは認証情報を取得するためのカスタムフック。
   const router = useRouter();
+  //useRouterはルーターを取得するためのカスタムフック。
 
   const validateForm = useCallback(() => {
+    //validateFormはフォームを検証するための関数。 
+    //useCallbackはメモ化されたコールバック関数を作成するためのフック。
     const emailValidation = InputValidator.validateEmail(credentials.email || '');
+    //InputValidator.validateEmail(credentials.email || '')はメールアドレスを検証するための関数。
+    //credentials.email || ''はcredentials.emailがnullかどうかを判断する。
     const passwordValidation = InputValidator.validatePassword(credentials.password || '');
-    
+    //InputValidator.validatePassword(credentials.password || '')はパスワードを検証するための関数。
+    //credentials.password || ''はcredentials.passwordがnullかどうかを判断する。
     setFieldErrors({
       email: emailValidation.errors || [],
+      //emailValidation.errors || []はemailValidation.errorsがnullかどうかを判断する。
       password: passwordValidation.errors || [],
+      //passwordValidation.errors || []はpasswordValidation.errorsがnullかどうかを判断する。
     });
 
     return emailValidation.isValid && passwordValidation.isValid;
+    //emailValidation.isValidとpasswordValidation.isValidがtrueの場合はtrueを返す。
   }, [credentials]);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    //handleSubmitはフォームを送信するための関数。
+    //eはReact.FormEvent型のオブジェクト。
+    //React.FormEventはフォームを送信するためのイベント。
     e.preventDefault();
+    //e.preventDefault()はフォームを送信するための関数。
     setError(null);
-
-    // Client-side validation
+    //setError(null)はエラーをクリアする。
     if (!validateForm()) {
+      //validateFormがfalseの場合はreturnする。
       return;
     }
 
-    // Rate limiting check
     if (loginAttempts >= 5) {
+      //loginAttemptsが5以上の場合はエラーを表示する。
       setError('ログイン試行回数が上限に達しました。しばらくしてから再度お試しください。');
       return;
     }
 
     setIsLoading(true);
+    //setIsLoading(true)はローディング中かどうかを表す。
 
     try {
-      // Sanitize input before sending
       const sanitizedCredentials = {
+        //sanitizedCredentialsは認証情報をサニタイズするためのオブジェクト。
         email: InputValidator.sanitizeInput(credentials.email),
-        password: credentials.password, // Don't sanitize password as it may contain special chars
+        //メールアドレスをサニタイズするための関数。
+        password: credentials.password,
+        //credentials.passwordはパスワードを表す。
       };
 
       await login(sanitizedCredentials);
-      setLoginAttempts(0); // Reset attempts on success
+      //login(sanitizedCredentials)は認証情報を送信するための関数。
+      setLoginAttempts(0); 
+      //setLoginAttempts(0)はログイン試行回数をクリアする。
       router.push('/admin/dashboard');
+      //router.push('/admin/dashboard')はダッシュボードページに遷移する。
     } catch (err: unknown) {
       setLoginAttempts(prev => prev + 1);
+      //setLoginAttempts(prev => prev + 1)はログイン試行回数を増やす。
+      //prevはログイン試行回数を表す。
       setError(authErrorHandler.login(err));
+      //authErrorHandler.login(err)はエラーを処理するための関数。
     } finally {
       setIsLoading(false);
+      //setIsLoading(false)はローディング中かどうかを表す。
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //handleChangeはフォームデータを変更するための関数。
+    //eはReact.ChangeEvent<HTMLInputElement>型のオブジェクト。
+    //React.ChangeEventはフォームデータを変更するためのイベント。
+    //HTMLInputElementはinput要素を表す。
     const { name, value } = e.target;
-    
-    // Real-time validation and sanitization
+    //nameはフォームデータの名前を表す。
+    //valueはフォームデータの値を表す。
+    //e.targetはeのtargetを表す。
+    //targetはtargetを表す。（ここではinput要素を表す。）
     const sanitizedValue = name === 'email' ? InputValidator.sanitizeInput(value || '') : (value || '');
-    
+    //sanitizedValueはフォームデータをサニタイズするための値。
+    //nameがemailの場合はInputValidator.sanitizeInput(value || '')をvalueにし、それ以外の場合はvalueをvalueにする。
+    //value || ''はvalueがnullかどうかを判断する。
     setCredentials(prev => ({
+      //setCredentialsはフォームデータを表す。
       ...prev,
+      //...prevはprevのオブジェクトを展開する。
       [name]: sanitizedValue
+      //[name]: sanitizedValueはnameをkeyにし、sanizedValueをvalueにする。
     }));
 
-    // Clear field errors when user starts typing
     const currentErrors = fieldErrors[name as keyof typeof fieldErrors];
+    //currentErrorsはフィールドエラーを表す。
+    //fieldErrorsのnameをkeyにし、fieldErrorsをvalueにする。
     if (currentErrors && currentErrors.length > 0) {
+      //currentErrorsがtrueかつcurrentErrors.lengthが0以上の場合はsetFieldErrorsはフィールドエラーを表す。
       setFieldErrors(prev => ({
+        //setFieldErrorsはフィールドエラーを表す。
         ...prev,
+        //...prevはprevのオブジェクトを展開する。
         [name]: []
+        //[name]: []はnameをkeyにし、[]をvalueにする。
       }));
     }
   };

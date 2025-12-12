@@ -226,7 +226,7 @@ export default function Company() {
                         <div>
                         <h3 className="text-xl font-bold text-gray-800 mb-4">営業時間</h3>
                         <p className="text-gray-700 leading-relaxed">
-                            平日 9:00〜18:00<br />
+                            平日 9:30〜18:30<br />
                             （土日祝日休業）
                         </p>
                         </div>

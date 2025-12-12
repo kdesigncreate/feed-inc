@@ -6,12 +6,20 @@ import { useRouter } from 'next/navigation';
 import { AdminRoute } from '@/components/AdminRoute';
 
 export default function AdminDashboardPage() {
+  //AdminDashboardPageはダッシュボードページのコンポーネント。  
   const { user, logout } = useAuth();
+  //useAuthは認証情報を取得するためのカスタムフック。
+  //userはユーザーを表す。
+  //logoutはログアウトを表す。
   const router = useRouter();
+  //useRouterはルーターを取得するためのカスタムフック。
 
   const handleLogout = async () => {
+    //handleLogoutはログアウトを行うための関数。
     await logout();
+    //logoutはログアウトを表す。
     router.push('/admin/login');
+    //router.push('/admin/login')はログインページに遷移する。
   };
 
   return (

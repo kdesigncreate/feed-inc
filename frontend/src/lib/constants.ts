@@ -13,7 +13,7 @@ export const COMPANY_INFO = {
     parentCompany: '株式会社フィードコミュニケーショングループ',
     subsidiaries: '株式会社タクト（Webデザイン制作・システム開発）、株式会社TRYANGLE（EC事業支援サービス）',
     email: 'contact@feed-inc.com',
-    businessHours: '平日 9:00〜18:00（土日祝日休業）',
+    businessHours: '平日 9:30〜18:30（土日祝日休業）',
     website: 'https://www.feed-inc.com'
   } as const;
   
@@ -111,5 +111,5 @@ export const ERROR_MESSAGES = {
       '東京メトロ南北線「六本木一丁目駅」1番出口より徒歩5分',
       '東京メトロ銀座線・南北線「溜池山王駅」13番出口より徒歩8分'
     ],
-    businessHours: '平日 9:00〜18:00（土日祝日休業）'
+    businessHours: '平日 9:30〜18:30（土日祝日休業）'
   } as const;

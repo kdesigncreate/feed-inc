@@ -5,39 +5,61 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const Header: React.FC = () => {
+    //HeaderはHeaderのコンポーネント。
+    //React.FCはReactの関数コンポーネントにするためのもの。
+    //引数はなし。
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    //初期状態はどちらもfalse
+    //初期状態はどちもfalse
+    //useStateはuseStateのコンポーネント。
+    //useStateは初期状態を設定するためのもの。
+    //isMenuOpenはメニューが開いているかどうかを表す。
+    //setIsMenuOpenはisMenuOpenの状態を変更するためのもの。
 
     const toggleMenu = () => {
+        //toggleMenuはメニューを開閉するための関数。
         setIsMenuOpen(!isMenuOpen);
+        //isMenuOpenの状態を反転させる（クリックするたびに開閉が変わる）
     };
-    //isMenuOpenの状態を反転させる（クリックするたびに開閉が変わる）
 
     const closeMenu = () => {
+        //closeMenuはメニューを閉じるための関数。
         setIsMenuOpen(false);
+        //isMenuOpenの状態をfalseにする
     };
-    //常にfalseにする
 
     useEffect(() => {
+        //useEffectは副作用を実行するためのもの。
+        //副作用とは、コンポーネントの外側の状態を変更すること。（ここではメニューを開閉する。）
         const handleEscKey = (event: KeyboardEvent) => {
+            //handleEscKeyはESCキーが押された時の処理を表す。
+            //eventはキーボードイベントを表す。
+            //KeyboardEventはキーボードイベントを表す。
             if (event.key === 'Escape') {
+                //event.key === 'Escape'の場合はif文の中に入る。
                 closeMenu();
+                //closeMenuはメニューを閉じるための関数。
             }
         };
-        //Escキーが押されていれば、closeMenu 関数を呼び出し、メニューを閉じる
 
         if (isMenuOpen) {
+            //isMenuOpenがtrueの場合はif文の中に入る。
             document.addEventListener('keydown', handleEscKey);
+            //handleEscKeyをdocument.addEventListenerで監視するためのもの。
+            //keydownはキーボードイベントを表す。
             document.body.style.overflow = 'hidden';
+            //document.bodyのstyle.overflowを'hidden'にする。
         }
-        //メニューが開いていれば、keydown イベントを追加し、ボディのスクロールを無効化する
 
         return () => {
             document.removeEventListener('keydown', handleEscKey);
+            //handleEscKeyをdocument.removeEventListenerで監視するためのもの。
             document.body.style.overflow = '';
+            //document.bodyのstyle.overflowを''にする。
         };
-        //メニューが閉じたら、keydown イベントを削除し、ボディのスクロールを有効化する
     },[isMenuOpen]);
+    //[isMenuOpen]は依存配列を表す。
+    //依存配列とは、useEffectが実行されるタイミングを決定するためのもの。
+    //isMenuOpenが変更されたら、useEffectが実行される。
 
     return (
         <header className="w-full p-4 flex justify-between items-center fixed top-0 left-0 text-white bg-transparent z-40">

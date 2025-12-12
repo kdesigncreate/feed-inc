@@ -1,18 +1,29 @@
 #!/usr/bin/env php
 <?php
+/**
+ * Artisan CLI エントリポイント。
+ * - Composer オートローダを読み込み
+ * - アプリケーションをブートストラップ
+ * - 受け取ったコマンド（argv）を実行して終了コードを返す
+ * このファイルは削除してはいけない。
+ * このファイルはLaravelのコマンドラインインターフェースを提供するためのファイルである。
+ * コマンドラインインターフェースとは、コマンドラインからLaravelのアプリケーションを操作するためのインターフェースである。
+ */
 
 use Illuminate\Foundation\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 
 define('LARAVEL_START', microtime(true));
+// 実行開始時刻（内部の計測用）
 
-// Register the Composer autoloader...
+// Composer のオートローダを登録
 require __DIR__.'/vendor/autoload.php';
 
-// Bootstrap Laravel and handle the command...
+// Laravel をブートストラップし、コンソールコマンドを処理する準備をする
 /** @var Application $app */
 $app = require_once __DIR__.'/bootstrap/app.php';
 
+// 受け取った引数（argv）を元にコマンドを実行し、終了コードを取得
 $status = $app->handleCommand(new ArgvInput);
 
 exit($status);

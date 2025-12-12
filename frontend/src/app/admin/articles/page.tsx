@@ -9,42 +9,77 @@ import { AdminRoute } from '@/components/AdminRoute';
 import Link from 'next/link';
 
 export default function AdminArticlesPage() {
+  //AdminArticlesPageは記事一覧ページのコンポーネント。
   const { user } = useAuth();
+  //useAuthは認証情報を取得するためのカスタムフック。
   const [articles, setArticles] = useState<Article[]>([]);
+  //articlesは記事を表す。
   const [error, setError] = useState<string | null>(null);
+  //errorはエラーを表す。
   const [search, setSearch] = useState('');
+  //searchは検索を表す。
   const [categoryFilter] = useState('all');
+  //categoryFilterはカテゴリーを表す。
   const [publishedFilter, setPublishedFilter] = useState<boolean | undefined>(undefined);
-
+  //publishedFilterは公開状態を表す。
 
   const fetchArticles = useCallback(async () => {
+    //fetchArticlesは記事を取得するための関数。
+    //usecallbackは記事を取得するための関数をキャッシュするためのメソッド。
     try {
       const params: Record<string, string | boolean> = {};
+      //paramsはパラメータを表す。
+      //Record<string, string | boolean>はパラメータを表す。
       if (search) params.search = search;
+      //searchがtrueの場合はparams.search = searchにする。
       if (categoryFilter !== 'all') params.category = categoryFilter;
+      //categoryFilterがallではない場合はparams.category = categoryFilterにする。
       if (publishedFilter !== undefined) params.published = publishedFilter;
+      //publishedFilterがundefinedではない場合はparams.published = publishedFilterにする。
 
       const response = await articleApi.getAdminArticles(params);
+      //articleApi.getAdminArticles(params)は記事を取得するためのAPI。
       setArticles(response.data || []);
+      //setArticlesは記事を表す。
+      //response.dataがundefinedの場合は[]を返す。
     } catch (err: unknown) {
+      //catchはエラーを捕捉するためのメソッド。
       setError(articleErrorHandler.fetch(err));
+      //setErrorはエラーを表す。
+      //articleErrorHandler.fetch(err)はエラーを取得するためのメソッド。
+      //fetchはフェッチを表す。
     }
   }, [search, categoryFilter, publishedFilter]);
+  //[search, categoryFilter, publishedFilter]は依存配列。
+  //依存配列は記事を取得するための関数を実行するための依存配列。
 
   useEffect(() => {
+    //useEffectは記事を取得するための関数を実行するためのメソッド。
     if (user) {
+      //userが存在する場合は記事を取得する。
       fetchArticles();
+      //fetchArticlesは記事を取得するための関数。
     }
   }, [user, fetchArticles]);
+  //[user, fetchArticles]は依存配列。
+  //依存配列は記事を取得するための関数を実行するための依存配列。
 
   const handleDelete = async (id: number) => {
+    //handleDeleteは記事を削除するための関数。
+    //idは記事のIDを表す。
     if (!confirm('この記事を削除しますか？')) return;
+    //confirm('この記事を削除しますか？')がfalseの場合はreturnする。
 
     try {
       await articleApi.deleteArticle(id);
+      //articleApi.deleteArticle(id)は記事を削除するためのAPI。
       await fetchArticles();
+      //fetchArticlesは記事を取得するための関数。
     } catch (err: unknown) {
       setError(articleErrorHandler.delete(err));
+      //setErrorはエラーを表す。
+      //articleErrorHandler.delete(err)はエラーを取得するためのメソッド。
+      //deleteは削除を表す。
     }
   };
 

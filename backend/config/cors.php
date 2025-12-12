@@ -4,14 +4,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cross-Origin Resource Sharing (CORS) Configuration
+    | クロスオリジンリソース共有（CORS）の設定
     |--------------------------------------------------------------------------
     |
-    | Here you may configure your settings for cross-origin resource sharing
-    | or "CORS". This determines what cross-origin operations may execute
-    | in web browsers. You are free to adjust these settings as needed.
+    | クロスオリジンリソース共有（CORS）の設定を行います。Web ブラウザで
+    | どのクロスオリジン操作を許可するかを決定します。必要に応じて
+    | 自由に調整してください。
     |
-    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    | 詳細: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     |
     */
 

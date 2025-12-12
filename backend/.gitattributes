@@ -1,11 +1,19 @@
+# Git 属性設定ファイル
+# - 改行コード/テキストの自動判定設定
+# - 拡張子ごとの差分ドライバの関連付け（見やすい diff）
+# - 配布物（git archive 等）から除外する項目の指定
+#
+# すべてのテキストファイルを LF に統一し、テキストを自動判定
 * text=auto eol=lf
 
+# 拡張子ごとの差分ドライバ設定（読みやすい差分表示のため）
 *.blade.php diff=html
 *.css diff=css
 *.html diff=html
 *.md diff=markdown
 *.php diff=php
 
+# 配布物（zip/tar 等）に含めないファイル・ディレクトリ
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore

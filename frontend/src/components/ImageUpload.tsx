@@ -2,11 +2,12 @@
 
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
-import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 import { isValidImageUrl } from '@/lib/imageUtils';
 
 interface ImageUploadProps {
+  //interfaceとは型を定義するためのもの。
+  //ImageUploadPropsはImageUploadPropsの型を定義するためのもの。
   currentImage?: string | null;
   onImageUpload: (imageUrl: string) => void;
   onImageRemove: () => void;
@@ -17,6 +18,9 @@ interface ImageUploadProps {
 }
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({
+  //ImageUploadはImageUploadのコンポーネント。
+  //React.FCはReactの関数コンポーネントにするためのもの。
+  //引数はImageUploadPropsの型を持つキーを持つオブジェクト。
   currentImage,
   onImageUpload,
   onImageRemove,
@@ -26,36 +30,71 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   acceptedFormats = ['jpeg', 'jpg', 'png', 'webp']
 }) => {
   const [isUploading, setIsUploading] = useState(false);
+  //isUploadingはアップロード中かどうかを表す。
+  //setIsUploadingはisUploadingの状態を変更するための関数。 
   const [error, setError] = useState<string | null>(null);
+  //errorはエラーを表す。
+  //setErrorはerrorの状態を変更するための関数。
   const fileInputRef = useRef<HTMLInputElement>(null);
+  //fileInputRefはfileInputのrefを表す。
+  //useRefはrefを作成するためのもの。
+  //HTMLInputElementはHTMLのinput要素を表す。
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    //handleFileSelectはファイルを選択するための関数。
+    //eventはファイル選択イベントを表す。
+    //React.ChangeEvent<HTMLInputElement>はファイル選択イベントを表す。
     const file = event.target.files?.[0];
+    //fileはファイルを表す。
+    //event.target.files?.[0]はファイルを選択するための関数。
     if (!file) return;
-
+    //fileが存在しない場合はreturnする。
     setError(null);
+    //errorの状態をnullにする。
 
-    // Validate file type
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    //fileExtensionはファイルの拡張子を表す。
+    //file.name.split('.').pop()?.toLowerCase()はファイルの拡張子を取得するための関数。
+    //splitは文字列を分割するための関数。
+    //popは配列の最後の要素を取得するための関数。
+    //toLowerCaseは文字列を小文字に変換するための関数。
     if (!fileExtension || !acceptedFormats.includes(fileExtension)) {
+      //fileExtensionが存在しない場合もしくはacceptedFormatsに含まれていない場合はreturnする。
       setError(`対応している形式: ${acceptedFormats.join(', ')}`);
+      //setErrorはエラーを表す。
+      //`対応している形式: ${acceptedFormats.join(', ')}`はエラーメッセージを表す。
+      //acceptedFormats.join(', ')はacceptedFormatsの要素を結合するための関数。
+      //joinは配列の要素を結合するための関数。
+      //','はカンマを表す。
       return;
     }
 
-    // Validate file size
     const fileSizeMB = file.size / (1024 * 1024);
+    //fileSizeMBはファイルのサイズを表す。
+    //file.size / (1024 * 1024)はファイルのサイズをMBに変換するための関数。
+    //1024 * 1024は1024バイトをMBに変換するための関数。
     if (fileSizeMB > maxFileSize) {
+      //fileSizeMBがmaxFileSizeを超えている場合はreturnする。
       setError(`ファイルサイズは${maxFileSize}MB以下にしてください`);
+      //setErrorはエラーを表す。
+      //`ファイルサイズは${maxFileSize}MB以下にしてください`はエラーメッセージを表す。
+      //maxFileSizeはファイルのサイズを表す。
+      //MBはメガバイトを表す。
       return;
     }
 
     setIsUploading(true);
+    //setIsUploadingはisUploadingの状態をtrueにする。
 
     try {
       const formData = new FormData();
+      //formDataはFormDataを表す。
+      //new FormData()はFormDataを作成するための関数。
       formData.append('thumbnail', file);
+      //formDataにfileを追加するための関数。
+      //appendはFormDataにデータを追加するための関数。
+      //thumbnailはファイルの名前を表す。
 
-      // Debug: Log what we're sending
       console.log('Sending file:', {
         name: file.name,
         size: file.size,
@@ -63,39 +102,64 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         lastModified: file.lastModified
       });
       console.log('FormData entries:', Array.from(formData.entries()));
+      //Array.from(formData.entries())はFormDataの要素を配列に変換するための関数。
+      //Array.fromは配列を作成するための関数。
+      //entriesはFormDataの要素を取得するための関数。
 
       const response = await api.post('/upload-thumbnail', formData, {
+        //api.postはAPIを呼び出すための関数。
+        //'/upload-thumbnail'はAPIのエンドポイントを表す。
+        //formDataはFormDataを表す。
         headers: {
-          'Content-Type': undefined, // Let browser set the correct multipart boundary
+          'Content-Type': undefined, 
+          //headersにContent-Typeを追加するための関数。
         },
       });
-
       onImageUpload(response.data.url);
+      //onImageUploadは画像をアップロードするための関数。
+      //response.data.urlは画像のURLを表す。
     } catch (err: any) {
       console.error('Upload error:', err);
       console.error('Response data:', err.response?.data);
       
-      // Handle axios error responses
       if (err.response?.data?.message) {
+        //err.response?.data?.messageが存在する場合はif文の中に入る。
         setError(err.response.data.message);
+        //setErrorはエラーを表す。
+        //err.response.data.messageはエラーメッセージを表す。
       } else if (err.response?.data?.errors) {
-        // Handle validation errors
+        //err.response?.data?.errorsが存在する場合はif文の中に入る。
         const errors = err.response.data.errors;
+        //err.response.data.errorsはエラーメッセージを表す。
         const firstError = Object.values(errors)[0];
+        //firstErrorはfirstErrorの要素を取得するための関数。
+        //Object.values(errors)[0]はerrorsの要素を取得するための関数。
         const errorMessage = Array.isArray(firstError) ? firstError[0] : 'バリデーションエラー';
+        //errorMessageはerrorMessageの要素を取得するための関数。
+        //Array.isArray(firstError)はfirstErrorが配列かどうかを表す。
+        //firstError[0]はfirstErrorの要素を取得するための関数。
         setError(`${errorMessage} (詳細: ${JSON.stringify(errors)})`);
+        //setErrorはエラーを表す。
+        //JSON.stringify(errors)はerrorsをJSON形式に変換するための関数。
       } else {
+        //err.messageが存在しない場合はelse文の中に入る。
         setError(err.message || 'アップロードに失敗しました');
+        //setErrorはエラーを表す。
       }
     } finally {
       setIsUploading(false);
+      //setIsUploadingはisUploadingの状態をfalseにする。
     }
   };
 
   const handleRemoveImage = () => {
+    //handleRemoveImageは画像を削除するための関数。
     onImageRemove();
+    //onImageRemoveは画像を削除するための関数。
     if (fileInputRef.current) {
+      //fileInputRef.currentが存在する場合はif文の中に入る。
       fileInputRef.current.value = '';
+      //fileInputRef.current.valueを''にする。
     }
   };
 

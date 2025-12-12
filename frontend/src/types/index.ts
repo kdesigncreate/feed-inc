@@ -1,5 +1,12 @@
 import React from 'react';
 
+/**
+ * フロントエンド全体で共有する TypeScript の型定義集。
+ * - コンポーネント間で再利用する Props や API レスポンス、ドメインモデルの型を集中管理
+ * - 型の重複を避け、変更の影響範囲を明確化するための単一の参照地点
+ * - 各セクション（認証・記事・UI 等）ごとに目的別のインターフェースを定義
+ */
+
 // 基本的なPropsインターフェース
 export interface BaseProps {
   className?: string;

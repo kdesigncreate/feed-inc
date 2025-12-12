@@ -9,12 +9,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Log Channel
+    | デフォルトのログチャネル
     |--------------------------------------------------------------------------
     |
-    | This option defines the default log channel that is utilized to write
-    | messages to your logs. The value provided here should match one of
-    | the channels present in the list of "channels" configured below.
+    | このオプションはログへの書き込みに使用されるデフォルトのログチャネルを
+    | 定義します。ここで指定する値は、下の「channels」で設定された
+    | いずれかのチャネルと一致している必要があります。
     |
     */
 
@@ -22,12 +22,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Deprecations Log Channel
+    | 非推奨機能のログチャネル
     |--------------------------------------------------------------------------
     |
-    | This option controls the log channel that should be used to log warnings
-    | regarding deprecated PHP and library features. This allows you to get
-    | your application ready for upcoming major versions of dependencies.
+    | 非推奨の PHP やライブラリ機能に関する警告を記録するログチャネルを
+    | 指定します。依存関係の今後のメジャーバージョンに備えるのに役立ちます。
     |
     */
 
@@ -38,15 +37,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Log Channels
+    | ログチャネル
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the log channels for your application. Laravel
-    | utilizes the Monolog PHP logging library, which includes a variety
-    | of powerful log handlers and formatters that you're free to use.
+    | アプリケーションのログチャネルを設定します。Laravel は Monolog を使用しており、
+    | さまざまな強力なログハンドラやフォーマッタを自由に利用できます。
     |
-    | Available drivers: "single", "daily", "slack", "syslog",
-    |                    "errorlog", "monolog", "custom", "stack"
+    | 利用可能なドライバ: "single", "daily", "slack", "syslog",
+    |                     "errorlog", "monolog", "custom", "stack"
     |
     */
 

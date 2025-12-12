@@ -7,23 +7,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
-// Health check endpoint
+// ヘルスチェック用エンドポイント
 Route::get('/health', function () {
+    //Route::getはGETリクエストを処理するメソッド
+    //healthはヘルスチェック用のエンドポイントを指定するメソッド
     return response()->json([
+        //response()->jsonはJSONを返すメソッド
         'status' => 'OK',
+        //statusはステータスを指定するメソッド
         'timestamp' => now()->toISOString(),
-        'laravel_version' => app()->version()
+        //timestampはタイムスタンプを指定するメソッド
+        //now()->toISOString()は現在の日時をISO形式で返すメソッド
+        'laravel_version' => app()->version(),
+        //laravel_versionはLaravelのバージョンを指定するメソッド
+        //app()->version()はLaravelのバージョンを返すメソッド
     ]);
 });
 
-// CSRF Cookie endpoint for SPA authentication  
+//CSRF Cookieエンドポイント
 Route::get('/sanctum/csrf-cookie', [AuthController::class, 'csrf']);
 
-// Authentication routes using SPA Cookie authentication
+//SPA Cookie認証用のルート
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-// Protected routes using Sanctum middleware for SPA
+// Sanctumミドルウェアを使用した保護されたルート
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
@@ -34,17 +42,17 @@ Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{slug}', [ArticleController::class, 'show']);
 Route::get('/categories', [ArticleController::class, 'categories']);
 
-// Upload thumbnail endpoint (requires authentication)
+// サムネイルアップロード用エンドポイント（認証が必要）
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/upload-thumbnail', [ImageUploadController::class, 'uploadThumbnail']);
     Route::post('/articles/upload-thumbnail', [ImageUploadController::class, 'uploadThumbnail']);
 });
 
-// Storage file serving (public access)
+// ストレージファイルサービング（公開アクセス）
 Route::get('/storage/{path}', function ($path) {
     \Log::info('API storage route accessed', ['path' => $path]);
     
-    // Handle nested paths properly
+    // ネストされたパスを適切に処理する
     $filePath = storage_path('app/public/' . $path);
     \Log::info('Looking for file via API', ['filePath' => $filePath, 'exists' => file_exists($filePath)]);
     
