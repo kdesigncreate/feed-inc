@@ -282,8 +282,8 @@ export default function Home() {
                 <Image
                   src={workflow.textAfter}
                   alt=""
-                  width={250}
-                  height={80}
+                  width={320}
+                  height={100}
                   className="w-full block"
                 />
               </div>
