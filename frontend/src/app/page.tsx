@@ -17,16 +17,16 @@ import { Button } from '../components/Button';
 
 const workflows = [
   {
-    textAfter: '/image/top/top_WF_01_text_after.png'
+    image: '/image/top/top_WF_01_text.png'
   },
   {
-    textAfter: '/image/top/top_WF_02_text_after.png'
+    image: '/image/top/top_WF_02_text.png'
   },
   {
-    textAfter: '/image/top/top_WF_03_text_after.png'
+    image: '/image/top/top_WF_03_text.png'
   },
   {
-    textAfter: '/image/top/top_WF_04_text_after.png'
+    image: '/image/top/top_WF_04_text.png'
   }
 ];
 
@@ -64,8 +64,6 @@ export default function Home() {
       day: '2-digit'
     }).replace(/\//g, '.');
   };
-
-  // ワークフローは静的表示のみ（JS挙動なし）
 
   return (
     <div className="font-main">
@@ -277,14 +275,23 @@ export default function Home() {
             {workflows.map((workflow, index) => (
               <div 
                 key={index} 
-                className="w-full"
+                className={`w-full ${index === 0 ? 'relative' : ''}`}
               >
+                {index === 0 && (
+                  <Image
+                    src="/image/top/top_WF_01_image.png"
+                    alt=""
+                    width={260}
+                    height={300}
+                    className="absolute -top-2 -right-2 z-0 pointer-events-none select-none"
+                  />
+                )}
                 <Image
-                  src={workflow.textAfter}
+                  src={workflow.image}
                   alt=""
                   width={320}
                   height={100}
-                  className="w-full block"
+                  className="w-full block relative z-10"
                 />
               </div>
             ))}
