@@ -275,17 +275,15 @@ export default function Home() {
             {workflows.map((workflow, index) => (
               <div 
                 key={index} 
-                className={`w-full ${index === 0 ? 'relative' : ''}`}
+                className="w-full relative"
               >
-                {index === 0 && (
-                  <Image
-                    src="/image/top/top_WF_01_image.png"
-                    alt=""
-                    width={260}
-                    height={300}
-                    className="absolute -top-2 -right-2 z-0 pointer-events-none select-none"
-                  />
-                )}
+                <Image
+                  src={`/image/top/top_WF_0${index + 1}_image.png`}
+                  alt=""
+                  width={260}
+                  height={300}
+                  className="absolute -top-4 -right-4 z-0 pointer-events-none select-none"
+                />
                 <Image
                   src={workflow.image}
                   alt=""
