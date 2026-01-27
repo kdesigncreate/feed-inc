@@ -217,7 +217,7 @@ export default function Company() {
                         <div className="mb-8">
                         <h3 className="text-xl font-bold text-gray-800 mb-4">アクセス</h3>
                         <ul className="text-gray-700 leading-relaxed space-y-2">
-                            <li>• 東京メトロ日比谷線・都営大江戸線「六本木駅」6番出口より徒歩1分</li>
+                            <li>• 東京メトロ日比谷線・都営大江戸線「六本木駅」6番出口より徒歩10分</li>
                             <li>• 東京メトロ南北線「六本木一丁目駅」1番出口より徒歩5分</li>
                             <li>• 東京メトロ銀座線・南北線「溜池山王駅」13番出口より徒歩8分</li>
                         </ul>
