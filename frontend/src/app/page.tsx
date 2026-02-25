@@ -70,7 +70,7 @@ export default function Home() {
       <Header />
       <HeroSection />
       {/* Company Mission Section */}
-      <section className="bg-white max-w-7xl mx-auto px-4 py-20 md:py-24 text-center sm:px-6 lg:px-12">
+      <section className="bg-white max-w-7xl mx-auto px-4 pt-0 md:pt-0 pb-20 md:pb-24 text-center sm:px-6 lg:px-12">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-bold text-gray-800">
             <Image
