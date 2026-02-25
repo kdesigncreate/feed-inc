@@ -17,14 +17,14 @@ export const HeroSection: React.FC = () => {
     <section className="relative w-screen pt-0 max-[767px]:pt-20 bg-transparent">
       <div className="relative w-full">
         {/* PC/SPで静的KVを切替 */}
-        <picture>
+        <picture className="block">
           {/* SP優先でsourceを先に記述（表示幅で分岐） */}
           <source media="(max-width: 767px)" srcSet={spImageSrc} />
           {/* デフォルトはPC */}
           <img
             src={pcImageSrc}
             alt="FEED Inc. Key Visual"
-            className="w-full h-auto object-cover md:object-top"
+            className="block w-full h-auto object-cover md:object-top"
             loading="eager"
             decoding="async"
           />
