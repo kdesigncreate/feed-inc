@@ -29,14 +29,7 @@ export const HeroSection: React.FC = () => {
             decoding="async"
           />
         </picture>
-        
-        {/* その他のコンテンツ */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-white">
-          <span className="text-sm font-medium mb-2" aria-label="Scroll down for more content">
-            SCROLL
-          </span>
-          <div className="w-px h-6 bg-white animate-scroll-bounce" aria-hidden="true"></div>
-        </div>
+
       </div>
     </section>
   );
