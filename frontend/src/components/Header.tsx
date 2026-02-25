@@ -63,7 +63,7 @@ export const Header: React.FC = () => {
 
     return (
         <header className="w-full p-4 flex justify-between items-center fixed top-0 left-0 text-white bg-transparent z-40">
-            <div className="w-full flex justify-between items-center">
+            <div className="w-full flex justify-between items-center bg-transparent">
                 <h1 className="flex items-center">
                     <Link href="/" onClick={closeMenu}>
                         <Image 
