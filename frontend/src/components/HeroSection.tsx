@@ -14,7 +14,7 @@ export const HeroSection: React.FC = () => {
   const spImageSrc = '/image/feed_WEB_KV_2026_SP.jpg';
 
   return (
-    <section className="relative w-screen h-[480px] md:h-[720px] overflow-hidden">
+    <section className="relative w-screen h-auto md:h-[720px] overflow-hidden">
       <div className="relative w-full h-full">
         {/* PC/SPで静的KVを切替 */}
         <picture>
@@ -24,7 +24,7 @@ export const HeroSection: React.FC = () => {
           <img
             src={pcImageSrc}
             alt="FEED Inc. Key Visual"
-            className="w-full h-full object-cover"
+            className="w-full h-auto object-cover md:h-full"
             loading="eager"
             decoding="async"
           />
