@@ -66,7 +66,7 @@ export default function Home() {
   };
 
   return (
-    <div className="font-main">
+    <div className="font-main overflow-x-hidden">
       <Header />
       <HeroSection />
       {/* Company Mission Section */}
