@@ -62,8 +62,8 @@ export const Header: React.FC = () => {
     //isMenuOpenが変更されたら、useEffectが実行される。
 
     return (
-        <header className="w-full p-4 flex justify-between items-center fixed top-0 left-0 text-white bg-transparent z-40">
-            <div className="w-full flex justify-between items-center bg-transparent">
+        <header className="w-full p-4 flex justify-between items-center fixed top-0 left-0 text-white bg-transparent bg-white/0 z-40">
+            <div className="w-full flex justify-between items-center bg-transparent bg-white/0">
                 <h1 className="flex items-center">
                     <Link href="/" onClick={closeMenu}>
                         <Image 
