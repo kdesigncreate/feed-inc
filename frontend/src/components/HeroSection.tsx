@@ -14,7 +14,7 @@ export const HeroSection: React.FC = () => {
   const spImageSrc = '/image/feed_WEB_KV_2026_SP.jpg';
 
   return (
-    <section className="relative w-screen mt-20 md:mt-24 bg-transparent">
+    <section className="relative w-screen mt-20 md:mt-0 bg-transparent">
       <div className="relative w-full">
         {/* PC/SPで静的KVを切替 */}
         <picture>
