@@ -67,7 +67,7 @@ export const Header: React.FC = () => {
                 <h1 className="flex items-center">
                     <Link href="/" onClick={closeMenu}>
                         <Image 
-                            src="/image/logo_feed.png"
+                            src="/image/logo_feed.webp"
                             alt="logo"
                             width={250} 
                             height={60} 

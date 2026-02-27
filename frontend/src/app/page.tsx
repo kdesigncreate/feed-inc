@@ -82,7 +82,7 @@ export default function Home() {
             />
           </h2>
           <p className="max-w-4xl mx-auto px-4 text-lg leading-relaxed text-gray-700">
-            私たちフィードは、「気づき」を活かした<wbr />プランニングとデザインで、<br />
+            私たちフィードは、新たな価値を見出す<wbr />プランニングとデザインで、<br />
             クライアントの商品の成長と生活者の快適な暮らしをサポートします。
           </p>
         </div>
