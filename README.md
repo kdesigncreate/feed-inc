@@ -255,19 +255,3 @@ make setup-git-hooks   # プリコミットセキュリティフック設定
 3. 変更をコミット（`git commit -m 'Add amazing feature'`）
 4. ブランチにプッシュ（`git push origin feature/amazing-feature`）
 5. Pull Requestを作成
-
-## 📄 ライセンス
-
-このプロジェクトは株式会社フィードの所有物です。
-
-## 📞 サポート
-
-問い合わせや相談は下記まで：
-
-- **電話**: 03-3505-3005
-- **メール**: contact@feed-inc.com
-- **ウェブサイト**: https://www.feed-inc.com/
-
----
-
-⚡ **Status**: Production Ready | 🌐 **Live**: https://www.feed-inc.com/
